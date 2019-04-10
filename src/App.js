@@ -19,9 +19,8 @@ class App extends Component {
   };
 
   componentDidMount() {
-    console.log(3);
-    window.addEventListener("google-loaded", this.renderGoogleLoginButton);
-    window.gapi && this.renderGoogleLoginButton();
+    window.addEventListener("google-loaded", this.gapiAuthInit);
+    window.gapi && this.gapiAuthInit();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -30,20 +29,37 @@ class App extends Component {
     }
   }
 
-  componentWillUnmount() {
-    window.removeEventListener("google-loaded", this.renderGoogleLoginButton);
-  }
-
   renderGoogleLoginButton = () => {
-    console.log("-- in renderGoogleLoginButton --");
     window.gapi.signin2.render("my-signin2", {
-      scope: "profile email",
+      // scope: "profile email",
       // width: 200,
       // height: 50,
       // longtitle: true,
       theme: "dark",
       onsuccess: this.handleSuccess,
       onfailure: this.handleFailure
+    });
+  };
+
+  componentWillUnmount() {
+    window.removeEventListener("google-loaded", this.gapiAuthInit);
+  }
+
+  gapiAuthInit = () => {
+    console.log("-- in renderGoogleLoginButton --");
+
+    window.gapi.load("auth2", () => {
+      if (!window.gapi.auth2.getAuthInstance()) {
+        window.gapi.auth2
+          .init({
+            client_id: "407265720120-ks2il9jao2ts7320nufeg23u6s67b1oe.apps.googleusercontent.com"
+          })
+          .then((auth2) => {
+            // window.auth2 = auth2;
+            this.renderGoogleLoginButton();
+          })
+          .catch((err) => console.log("auth2: ", err));
+      }
     });
   };
 
