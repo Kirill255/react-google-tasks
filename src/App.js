@@ -1,6 +1,16 @@
 import React, { Component } from "react";
-import { GoogleLogin, GoogleLogout } from "react-google-login";
 import "./App.css";
+
+const getUserProfile = (profile) => {
+  return {
+    id: profile.getId(),
+    name: profile.getGivenName(),
+    family_name: profile.getFamilyName(),
+    full_name: profile.getName(),
+    avatar: profile.getImageUrl(),
+    email: profile.getEmail()
+  };
+};
 
 class App extends Component {
   state = {
@@ -8,24 +18,73 @@ class App extends Component {
     user: null
   };
 
-  onSignIn = (googleUser) => {
-    console.log("onSignIn!!!");
-    const user = googleUser && googleUser;
-    console.log(user);
-    this.setState({ isAuthenticated: true, user });
+  componentDidMount() {
+    console.log(3);
+    window.addEventListener("google-loaded", this.renderGoogleLoginButton);
+    window.gapi && this.renderGoogleLoginButton();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.isAuthenticated && !this.state.isAuthenticated) {
+      this.renderGoogleLoginButton();
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("google-loaded", this.renderGoogleLoginButton);
+  }
+
+  renderGoogleLoginButton = () => {
+    console.log("-- in renderGoogleLoginButton --");
+    window.gapi.signin2.render("my-signin2", {
+      scope: "profile email",
+      // width: 200,
+      // height: 50,
+      // longtitle: true,
+      theme: "dark",
+      onsuccess: this.handleSuccess,
+      onfailure: this.handleFailure
+    });
   };
 
-  onSignInFailure = (error) => {
-    console.log("onSignInFailure!!!");
+  handleSuccess = (googleUser) => {
+    console.log("-- in onSignIn --");
+
+    const profile = googleUser.getBasicProfile();
+    const user = getUserProfile(profile);
+    const id_token = googleUser.getAuthResponse().id_token;
+    user.id_token = id_token;
+    this.setState({ user, isAuthenticated: true });
+  };
+
+  handleFailure = (error) => {
     console.log(error);
   };
 
-  onSignOut = () => {
-    this.setState({ isAuthenticated: false, user: null });
+  logout = () => {
+    console.log("-- in logout --");
+
+    let auth2 = window.gapi && window.gapi.auth2.getAuthInstance();
+    // console.log(auth2);
+
+    if (auth2) {
+      if (auth2.isSignedIn.get()) {
+        auth2
+          .signOut()
+          .then(() => {
+            this.setState({ user: null, isAuthenticated: false });
+            console.log("Logged out successfully");
+          })
+          .catch((err) => {
+            console.log("signOut: ", err);
+          });
+      }
+    } else {
+      console.log("Error while logging out");
+    }
   };
 
   render() {
-    console.log(this.state.user && this.state.user.isSignedIn());
     return (
       <div className="App">
         {!this.state.isAuthenticated ? (
@@ -33,24 +92,13 @@ class App extends Component {
             <h1>Your Google Tasks!</h1>
             <div className="signin__form">
               <h2>Please, Login In!</h2>
-              <GoogleLogin
-                clientId={
-                  "407265720120-ks2il9jao2ts7320nufeg23u6s67b1oe.apps.googleusercontent.com"
-                }
-                buttonText="Login"
-                onSuccess={this.onSignIn}
-                onFailure={this.onSignInFailure}
-                cookiePolicy={"single_host_origin"}
-                isSignedIn={true}
-              />
+              <div id="my-signin2" />
             </div>
           </div>
         ) : (
-          <GoogleLogout
-            clientId={"407265720120-ks2il9jao2ts7320nufeg23u6s67b1oe.apps.googleusercontent.com"}
-            buttonText="Logout"
-            onLogoutSuccess={this.onSignOut}
-          />
+          <button style={{ width: 200, height: 50, textAlign: "center" }} onClick={this.logout}>
+            Logout
+          </button>
         )}
       </div>
     );
