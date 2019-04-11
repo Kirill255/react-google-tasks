@@ -90,6 +90,7 @@ class App extends Component {
           .signOut()
           .then(() => {
             // this.setState({ user: null, isAuthenticated: false });
+            auth2.disconnect();
             console.log("Logged out successfully");
           })
           .catch((err) => {
