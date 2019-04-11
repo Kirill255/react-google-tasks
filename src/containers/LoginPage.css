@@ -1,0 +1,23 @@
+.signin__page {
+  font-family: "Quicksand", sans-serif;
+  /* color: rgb(173, 173, 194); */
+  width: 100vw;
+  height: 100vh;
+  background: url(/image/natural.jpg) center no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.signin__form {
+  min-width: 45vw;
+  min-height: 30vh;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

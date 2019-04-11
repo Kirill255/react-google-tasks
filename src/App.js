@@ -1,4 +1,9 @@
 import React, { Component } from "react";
+
+import LoginPage from "./containers/LoginPage";
+import TasksPage from "./containers/TasksPage";
+import Loader from "./components/Loader";
+
 import "./App.css";
 
 const googleUserHandler = (googleUser) => {
@@ -23,6 +28,7 @@ const getUserProfile = (profile) => {
 
 class App extends Component {
   state = {
+    loading: false,
     isAuthenticated: false,
     user: null
   };
@@ -34,6 +40,7 @@ class App extends Component {
 
   initClient = () => {
     console.log("-- in initClient --");
+    this.setState({ loading: true });
 
     window.gapi.load("client:auth2", () => {
       window.gapi.client
@@ -46,6 +53,7 @@ class App extends Component {
         .then(() => {
           // Assign auth2 variable
           this.auth2 = window.gapi.auth2.getAuthInstance();
+          this.setState({ loading: false });
           // Listen for sign-in state changes.
           this.auth2.isSignedIn.listen(this.updateSigninStatus);
 
@@ -59,10 +67,14 @@ class App extends Component {
   updateSigninStatus = (isSignedIn) => {
     if (isSignedIn) {
       this.getUser();
-      this.listTaskLists();
     } else {
       this.setState({ user: null, isAuthenticated: false });
     }
+  };
+
+  getUser = () => {
+    const user = googleUserHandler(this.auth2.currentUser.get());
+    this.setState({ user, isAuthenticated: true });
   };
 
   handleAuthClick = () => {
@@ -73,56 +85,17 @@ class App extends Component {
     this.auth2.signOut().catch(console.log);
   };
 
-  getUser = () => {
-    const user = googleUserHandler(this.auth2.currentUser.get());
-    this.setState({ user, isAuthenticated: true });
-  };
-
-  listTaskLists = () => {
-    window.gapi.client.tasks.tasklists
-      .list({
-        maxResults: 10
-      })
-      .then((response) => {
-        console.log("Task Lists:");
-        const taskLists = response.result.items;
-        if (taskLists && taskLists.length > 0) {
-          for (let i = 0; i < taskLists.length; i++) {
-            let taskList = taskLists[i];
-            console.log(taskList.title + " (" + taskList.id + ")");
-          }
-        } else {
-          console.log("No task lists found.");
-        }
-      });
-  };
-
   render() {
+    if (this.state.loading) {
+      return <Loader />;
+    }
+
     return (
       <div className="App">
         {!this.state.isAuthenticated ? (
-          <div className="signin__page">
-            <h1>Your Google Tasks!</h1>
-            <div className="signin__form">
-              <h2>Please, Login In!</h2>
-              <div
-                id="authorize_button"
-                className="customGPlusSignIn"
-                onClick={this.handleAuthClick}
-              >
-                <span className="icon" />
-                <span className="buttonText">Google</span>
-              </div>
-            </div>
-          </div>
+          <LoginPage handleAuthClick={this.handleAuthClick} />
         ) : (
-          <button
-            id="signout_button"
-            style={{ width: 200, height: 50, textAlign: "center" }}
-            onClick={this.handleSignoutClick}
-          >
-            Sign Out
-          </button>
+          <TasksPage handleSignoutClick={this.handleSignoutClick} />
         )}
       </div>
     );
