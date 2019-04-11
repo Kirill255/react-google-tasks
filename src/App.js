@@ -44,11 +44,13 @@ class App extends Component {
           scope: "https://www.googleapis.com/auth/tasks"
         })
         .then(() => {
+          // Assign auth2 variable
+          this.auth2 = window.gapi.auth2.getAuthInstance();
           // Listen for sign-in state changes.
-          window.gapi.auth2.getAuthInstance().isSignedIn.listen(this.updateSigninStatus);
+          this.auth2.isSignedIn.listen(this.updateSigninStatus);
 
           // Handle the initial sign-in state.
-          this.updateSigninStatus(window.gapi.auth2.getAuthInstance().isSignedIn.get());
+          this.updateSigninStatus(this.auth2.isSignedIn.get());
         })
         .catch(console.log);
     });
@@ -64,16 +66,15 @@ class App extends Component {
   };
 
   handleAuthClick = () => {
-    window.gapi.auth2.getAuthInstance().signIn();
+    this.auth2.signIn().catch(console.log);
   };
 
   handleSignoutClick = () => {
-    window.gapi.auth2.getAuthInstance().signOut();
+    this.auth2.signOut().catch(console.log);
   };
 
   getUser = () => {
-    const googleUser = window.gapi.auth2.getAuthInstance().currentUser.get();
-    const user = googleUserHandler(googleUser);
+    const user = googleUserHandler(this.auth2.currentUser.get());
     this.setState({ user, isAuthenticated: true });
   };
 
