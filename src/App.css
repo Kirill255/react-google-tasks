@@ -22,7 +22,7 @@
   align-items: center;
 }
 
-#customBtn {
+#authorize_button {
   display: inline-block;
   background: white;
   color: #444;
@@ -32,7 +32,7 @@
   box-shadow: 1px 1px 1px grey;
   white-space: nowrap;
 }
-#customBtn:hover {
+#authorize_button:hover {
   cursor: pointer;
 }
 span.label {

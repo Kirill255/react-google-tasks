@@ -28,78 +28,72 @@ class App extends Component {
   };
 
   componentDidMount() {
-    window.addEventListener("google-loaded", this.renderGoogleLoginButton);
-    window.gapi && this.renderGoogleLoginButton();
+    window.addEventListener("google-loaded", this.initClient);
+    window.gapi && this.initClient();
   }
 
-  renderGoogleLoginButton = () => {
-    console.log("-- in renderGoogleLoginButton --");
+  initClient = () => {
+    console.log("-- in initClient --");
 
-    window.gapi.load("auth2", () => {
-      if (!window.gapi.auth2.getAuthInstance()) {
-        window.gapi.auth2
-          .init({
-            client_id: "407265720120-ks2il9jao2ts7320nufeg23u6s67b1oe.apps.googleusercontent.com"
-          })
-          .then((auth2) => {
-            // window.auth2 = auth2;
-            // console.log(window.auth2.isSignedIn.get());
+    window.gapi.load("client:auth2", () => {
+      window.gapi.client
+        .init({
+          apiKey: "AIzaSyDKvF1KEk7XllLfpfhbgv1MmcxaSVgWyeA",
+          discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/tasks/v1/rest"],
+          clientId: "365243747034-8bogar38jdern567eimmvs48qqpc7ebi.apps.googleusercontent.com",
+          scope: "https://www.googleapis.com/auth/tasks"
+        })
+        .then(() => {
+          // Listen for sign-in state changes.
+          window.gapi.auth2.getAuthInstance().isSignedIn.listen(this.updateSigninStatus);
 
-            auth2.isSignedIn.listen((val) => {
-              // console.log(val);
-              if (val) {
-                const user = googleUserHandler(auth2.currentUser.get());
-                this.setState({ user, isAuthenticated: true });
-              } else {
-                this.setState({ user: null, isAuthenticated: false });
-              }
-            });
-
-            if (auth2.isSignedIn.get()) {
-              const user = googleUserHandler(auth2.currentUser.get());
-
-              this.setState({ user, isAuthenticated: true });
-              return;
-            }
-
-            auth2.attachClickHandler(
-              document.getElementById("customBtn"),
-              {},
-              (googleUser) => {
-                // console.log(googleUser);
-                // const user = googleUserHandler(googleUser);
-                // this.setState({ user, isAuthenticated: true });
-              },
-              (err) => console.log(err)
-            );
-          })
-          .catch((err) => console.log("auth2: ", err));
-      }
+          // Handle the initial sign-in state.
+          this.updateSigninStatus(window.gapi.auth2.getAuthInstance().isSignedIn.get());
+        })
+        .catch(console.log);
     });
   };
 
-  logout = () => {
-    console.log("-- in logout --");
-
-    let auth2 = window.gapi && window.gapi.auth2.getAuthInstance();
-    // console.log(auth2);
-
-    if (auth2) {
-      if (auth2.isSignedIn.get()) {
-        auth2
-          .signOut()
-          .then(() => {
-            // this.setState({ user: null, isAuthenticated: false });
-            auth2.disconnect();
-            console.log("Logged out successfully");
-          })
-          .catch((err) => {
-            console.log("signOut: ", err);
-          });
-      }
+  updateSigninStatus = (isSignedIn) => {
+    if (isSignedIn) {
+      this.getUser();
+      this.listTaskLists();
     } else {
-      console.log("Error while logging out");
+      this.setState({ user: null, isAuthenticated: false });
     }
+  };
+
+  handleAuthClick = () => {
+    window.gapi.auth2.getAuthInstance().signIn();
+  };
+
+  handleSignoutClick = () => {
+    window.gapi.auth2.getAuthInstance().signOut();
+  };
+
+  getUser = () => {
+    const googleUser = window.gapi.auth2.getAuthInstance().currentUser.get();
+    const user = googleUserHandler(googleUser);
+    this.setState({ user, isAuthenticated: true });
+  };
+
+  listTaskLists = () => {
+    window.gapi.client.tasks.tasklists
+      .list({
+        maxResults: 10
+      })
+      .then((response) => {
+        console.log("Task Lists:");
+        const taskLists = response.result.items;
+        if (taskLists && taskLists.length > 0) {
+          for (let i = 0; i < taskLists.length; i++) {
+            let taskList = taskLists[i];
+            console.log(taskList.title + " (" + taskList.id + ")");
+          }
+        } else {
+          console.log("No task lists found.");
+        }
+      });
   };
 
   render() {
@@ -110,15 +104,23 @@ class App extends Component {
             <h1>Your Google Tasks!</h1>
             <div className="signin__form">
               <h2>Please, Login In!</h2>
-              <div id="customBtn" className="customGPlusSignIn">
+              <div
+                id="authorize_button"
+                className="customGPlusSignIn"
+                onClick={this.handleAuthClick}
+              >
                 <span className="icon" />
                 <span className="buttonText">Google</span>
               </div>
             </div>
           </div>
         ) : (
-          <button style={{ width: 200, height: 50, textAlign: "center" }} onClick={this.logout}>
-            Logout
+          <button
+            id="signout_button"
+            style={{ width: 200, height: 50, textAlign: "center" }}
+            onClick={this.handleSignoutClick}
+          >
+            Sign Out
           </button>
         )}
       </div>

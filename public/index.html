@@ -8,7 +8,17 @@
   <meta name="theme-color" content="#000000" />
   <link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
 
-  <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
+  <!-- <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
+  <script type="text/javascript">
+    function init() {
+      console.log("Google event loaded");
+      window.dispatchEvent(new Event("google-loaded"));
+    }
+  </script> -->
+
+  <script async defer src="https://apis.google.com/js/api.js" onload="this.onload=function(){};init()"
+    onreadystatechange="if (this.readyState === 'complete') this.onload()">
+    </script>
   <script type="text/javascript">
     function init() {
       console.log("Google event loaded");
