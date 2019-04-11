@@ -1,6 +1,15 @@
 import React, { Component } from "react";
 import "./App.css";
 
+const googleUserHandler = (googleUser) => {
+  const profile = googleUser.getBasicProfile();
+  const user = getUserProfile(profile);
+  const id_token = googleUser.getAuthResponse().id_token;
+  user.id_token = id_token;
+
+  return user;
+};
+
 const getUserProfile = (profile) => {
   return {
     id: profile.getId(),
@@ -36,11 +45,19 @@ class App extends Component {
             // window.auth2 = auth2;
             // console.log(window.auth2.isSignedIn.get());
 
+            auth2.isSignedIn.listen((val) => {
+              // console.log(val);
+              if (val) {
+                const user = googleUserHandler(auth2.currentUser.get());
+                this.setState({ user, isAuthenticated: true });
+              } else {
+                this.setState({ user: null, isAuthenticated: false });
+              }
+            });
+
             if (auth2.isSignedIn.get()) {
-              const profile = auth2.currentUser.get().getBasicProfile();
-              const user = getUserProfile(profile);
-              const id_token = auth2.currentUser.get().getAuthResponse().id_token;
-              user.id_token = id_token;
+              const user = googleUserHandler(auth2.currentUser.get());
+
               this.setState({ user, isAuthenticated: true });
               return;
             }
@@ -50,11 +67,8 @@ class App extends Component {
               {},
               (googleUser) => {
                 // console.log(googleUser);
-                const profile = googleUser.getBasicProfile();
-                const user = getUserProfile(profile);
-                const id_token = googleUser.getAuthResponse().id_token;
-                user.id_token = id_token;
-                this.setState({ user, isAuthenticated: true });
+                // const user = googleUserHandler(googleUser);
+                // this.setState({ user, isAuthenticated: true });
               },
               (err) => console.log(err)
             );
@@ -66,6 +80,7 @@ class App extends Component {
 
   logout = () => {
     console.log("-- in logout --");
+
     let auth2 = window.gapi && window.gapi.auth2.getAuthInstance();
     // console.log(auth2);
 
@@ -74,7 +89,7 @@ class App extends Component {
         auth2
           .signOut()
           .then(() => {
-            this.setState({ user: null, isAuthenticated: false });
+            // this.setState({ user: null, isAuthenticated: false });
             console.log("Logged out successfully");
           })
           .catch((err) => {
