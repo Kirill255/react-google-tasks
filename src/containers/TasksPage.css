@@ -1,0 +1,47 @@
+:root {
+  --drawerWidth: 240px;
+}
+
+.tasks__page {
+  display: flex;
+}
+
+.tasks__app-bar {
+  width: calc(100% - var(--drawerWidth)) !important;
+  margin-left: var(--drawerWidth);
+}
+
+.tasks__app-name {
+  flex-grow: 1;
+}
+
+.tasks__drawer {
+  width: var(--drawerWidth);
+  flex-shrink: 0;
+}
+
+.tasks__drawer-paper {
+  width: var(--drawerWidth);
+}
+
+.tasks__toolbar {
+  min-height: 56px;
+}
+
+@media (min-width: 0px) and (orientation: landscape) {
+  .tasks__toolbar {
+    min-height: 48px;
+  }
+}
+
+@media (min-width: 600px) {
+  .tasks__toolbar {
+    min-height: 64px;
+  }
+}
+
+.tasks__content {
+  flex-grow: 1;
+  background-color: #fafafa;
+  padding: 24px;
+}
