@@ -9,11 +9,13 @@ import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
 
 import TaskLists from "../components/TaskLists";
+import Tasks from "../components/Tasks";
 
 import "./TasksPage.css";
 
 export default class TasksPage extends Component {
-  state = { taskLists: [] };
+  state = { currentListId: null, taskLists: [], tasks: [] };
+
   componentDidMount() {
     this.listTaskLists();
   }
@@ -26,6 +28,7 @@ export default class TasksPage extends Component {
       .then((response) => {
         console.log("Task Lists:");
         const taskLists = response.result.items;
+        console.log(taskLists);
 
         if (taskLists && taskLists.length > 0) {
           this.setState({ taskLists });
@@ -37,6 +40,21 @@ export default class TasksPage extends Component {
           console.log("No task lists found.");
         }
       });
+  };
+
+  listTasksOfList = (id) => {
+    window.gapi.client.tasks.tasks.list({ tasklist: id }).then((response) => {
+      console.log("Tasks of List:");
+      console.log(response);
+      const tasks = response.result.items;
+      console.log(tasks);
+      if (tasks && tasks.length > 0) {
+        this.setState({ tasks, currentListId: id });
+      } else {
+        this.setState({ tasks: [], currentListId: id });
+        console.log("No tasks of this list found.");
+      }
+    });
   };
 
   render() {
@@ -64,34 +82,12 @@ export default class TasksPage extends Component {
           <div className="tasks__toolbar" />
           <Divider />
 
-          <TaskLists taskLists={this.state.taskLists} />
+          <TaskLists taskLists={this.state.taskLists} listTasksOfList={this.listTasksOfList} />
         </Drawer>
         <main className="tasks__content">
           <div className="tasks__toolbar" />
-          <Typography paragraph>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-            incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent
-            elementum facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in
-            hendrerit gravida rutrum quisque non tellus. Convallis convallis tellus id interdum
-            velit laoreet id donec ultrices. Odio morbi quis commodo odio aenean sed adipiscing.
-            Amet nisl suscipit adipiscing bibendum est ultricies integer quis. Cursus euismod quis
-            viverra nibh cras. Metus vulputate eu scelerisque felis imperdiet proin fermentum leo.
-            Mauris commodo quis imperdiet massa tincidunt. Cras tincidunt lobortis feugiat vivamus
-            at augue. At augue eget arcu dictum varius duis at consectetur lorem. Velit sed
-            ullamcorper morbi tincidunt. Lorem donec massa sapien faucibus et molestie ac.
-          </Typography>
-          <Typography paragraph>
-            Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper eget nulla
-            facilisi etiam dignissim diam. Pulvinar elementum integer enim neque volutpat ac
-            tincidunt. Ornare suspendisse sed nisi lacus sed viverra tellus. Purus sit amet volutpat
-            consequat mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis risus
-            sed vulputate odio. Morbi tincidunt ornare massa eget egestas purus viverra accumsan in.
-            In hendrerit gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem
-            et tortor. Habitant morbi tristique senectus et. Adipiscing elit duis tristique
-            sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis eleifend. Commodo
-            viverra maecenas accumsan lacus vel facilisis. Nulla posuere sollicitudin aliquam
-            ultrices sagittis orci a.
-          </Typography>
+
+          {this.state.currentListId ? <Tasks tasks={this.state.tasks} /> : "Select task list"}
         </main>
       </div>
     );
