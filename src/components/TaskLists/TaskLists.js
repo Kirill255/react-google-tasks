@@ -9,7 +9,9 @@ import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 import AddIcon from "@material-ui/icons/Add";
-//
+
+import "./TaskLists.css";
+
 class TaskLists extends Component {
   handleClick = (id) => () => {
     this.props.listTasksOfList(id);

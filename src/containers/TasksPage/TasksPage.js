@@ -8,8 +8,8 @@ import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
 
-import TaskLists from "../components/TaskLists";
-import Tasks from "../components/Tasks";
+import TaskLists from "../../components/TaskLists/TaskLists";
+import Tasks from "../../components/Tasks/Tasks";
 
 import "./TasksPage.css";
 

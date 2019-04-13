@@ -1,4 +1,4 @@
-.signin__page {
+.login__page {
   font-family: "Quicksand", sans-serif;
   /* color: rgb(173, 173, 194); */
   width: 100vw;
@@ -10,12 +10,15 @@
   align-items: center;
 }
 
-.signin__form {
+.login__form {
+  padding-top: 8px;
+  padding-bottom: 8px;
   min-width: 45vw;
   min-height: 30vh;
   background: rgba(255, 255, 255, 0.6);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  border-radius: 2px;
+  box-shadow: 0px 1px 10px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+    0px 2px 1px -1px rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
   justify-content: center;

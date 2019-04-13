@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 
-import LoginPage from "./containers/LoginPage";
-import TasksPage from "./containers/TasksPage";
-import Loader from "./components/Loader";
+import LoginPage from "../LoginPage/LoginPage";
+import TasksPage from "../TasksPage/TasksPage";
+import Loader from "../../components/Loader/Loader";
 
 import "./App.css";
 
@@ -77,7 +77,7 @@ class App extends Component {
     this.setState({ user, isAuthenticated: true });
   };
 
-  handleAuthClick = () => {
+  handleSignInClick = () => {
     this.auth2.signIn().catch(console.log);
   };
 
@@ -93,7 +93,7 @@ class App extends Component {
     return (
       <div className="App">
         {!this.state.isAuthenticated ? (
-          <LoginPage handleAuthClick={this.handleAuthClick} />
+          <LoginPage handleSignInClick={this.handleSignInClick} />
         ) : (
           <TasksPage handleSignoutClick={this.handleSignoutClick} />
         )}

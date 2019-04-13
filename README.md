@@ -4,6 +4,12 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Related
 
+https://developers.google.com/tasks/
+
+https://developers.google.com/api-client-library/javascript/
+
+https://developers.google.com/identity/sign-in/web/
+
 https://github.com/anthonyjgrove/react-google-login
 
 https://github.com/KarafiziArtur/react-google-tasks
