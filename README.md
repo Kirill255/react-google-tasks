@@ -10,6 +10,8 @@ https://developers.google.com/api-client-library/javascript/
 
 https://developers.google.com/identity/sign-in/web/
 
+https://gsuite.google.com/learning-center/products/apps/keep-track-of-tasks/#!/
+
 https://github.com/anthonyjgrove/react-google-login
 
 https://github.com/KarafiziArtur/react-google-tasks

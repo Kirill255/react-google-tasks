@@ -10,15 +10,30 @@ import Button from "@material-ui/core/Button";
 
 import TaskLists from "../../components/TaskLists/TaskLists";
 import Tasks from "../../components/Tasks/Tasks";
+import TaskListModal from "../../components/TaskListModal/TaskListModal";
 
 import "./TasksPage.css";
 
 export default class TasksPage extends Component {
-  state = { currentListId: null, taskLists: [], tasks: [] };
+  state = {
+    selectedTaskListId: null,
+    taskLists: [],
+    tasks: [],
+    isModalOpen: false,
+    taskListTitle: ""
+  };
 
   componentDidMount() {
     this.listTaskLists();
   }
+
+  handleModalOpen = () => {
+    this.setState({ isModalOpen: true });
+  };
+
+  handleModalClose = () => {
+    this.setState({ isModalOpen: false });
+  };
 
   listTaskLists = () => {
     window.gapi.client.tasks.tasklists
@@ -26,35 +41,93 @@ export default class TasksPage extends Component {
         maxResults: 10
       })
       .then((response) => {
-        console.log("Task Lists:");
         const taskLists = response.result.items;
-        console.log(taskLists);
 
         if (taskLists && taskLists.length > 0) {
           this.setState({ taskLists });
-          // for (let i = 0; i < taskLists.length; i++) {
-          //   let taskList = taskLists[i];
-          //   console.log(taskList.title + " (" + taskList.id + ")");
-          // }
         } else {
           console.log("No task lists found.");
         }
-      });
+      })
+      .catch(console.log);
   };
 
   listTasksOfList = (id) => {
-    window.gapi.client.tasks.tasks.list({ tasklist: id }).then((response) => {
-      console.log("Tasks of List:");
-      console.log(response);
-      const tasks = response.result.items;
-      console.log(tasks);
-      if (tasks && tasks.length > 0) {
-        this.setState({ tasks, currentListId: id });
-      } else {
-        this.setState({ tasks: [], currentListId: id });
-        console.log("No tasks of this list found.");
-      }
-    });
+    window.gapi.client.tasks.tasks
+      .list({ tasklist: id })
+      .then((response) => {
+        const tasks = response.result.items;
+
+        if (tasks && tasks.length > 0) {
+          this.setState({ tasks, selectedTaskListId: id });
+        } else {
+          this.setState({ tasks: [], selectedTaskListId: id });
+          console.log("No tasks of this list found.");
+        }
+      })
+      .catch(console.log);
+  };
+
+  handleChangeTaskListTitle = (taskListTitle) => {
+    this.setState({ taskListTitle });
+  };
+
+  handleCreateTaskList = () => {
+    this.handleModalClose();
+    if (this.state.taskListTitle) {
+      this.createNewTaskList(this.state.taskListTitle);
+    }
+  };
+
+  handleCreateTaskListCancel = () => {
+    this.handleModalClose();
+    this.setState({ taskListTitle: "" });
+  };
+
+  createNewTaskList = (title) => {
+    window.gapi.client.tasks.tasklists
+      .insert({ title })
+      .then((response) => {
+        this.setState({ taskListTitle: "" });
+        const newTask = response.result;
+
+        if (newTask && newTask.id) {
+          this.listTaskLists();
+        } else {
+          console.log("Something went wrong.");
+        }
+      })
+      .catch(console.log);
+  };
+
+  editTaskList = (id, title) => {
+    window.gapi.client.tasks.tasklists
+      .update({ tasklist: id, id: id, title: "updated" })
+      .then((response) => {
+        const updatedTaskList = response.result;
+
+        if (updatedTaskList && updatedTaskList.id) {
+          this.listTaskLists();
+        } else {
+          console.log("Something went wrong.");
+        }
+      })
+      .catch(console.log);
+  };
+
+  deleteTaskList = (id) => {
+    window.gapi.client.tasks.tasklists
+      .delete({ tasklist: id })
+      .then((response) => {
+        const result = response.result; // If successful, this method returns an empty response body.
+
+        if (!result) {
+          this.listTaskLists();
+        } else {
+          console.log("Something went wrong.");
+        }
+      })
+      .catch(console.log);
   };
 
   render() {
@@ -82,13 +155,28 @@ export default class TasksPage extends Component {
           <div className="tasks__toolbar" />
           <Divider />
 
-          <TaskLists taskLists={this.state.taskLists} listTasksOfList={this.listTasksOfList} />
+          <TaskLists
+            taskLists={this.state.taskLists}
+            listTasksOfList={this.listTasksOfList}
+            handleModalOpen={this.handleModalOpen}
+            editTaskList={this.editTaskList}
+            deleteTaskList={this.deleteTaskList}
+          />
         </Drawer>
         <main className="tasks__content">
           <div className="tasks__toolbar" />
 
-          {this.state.currentListId ? <Tasks tasks={this.state.tasks} /> : "Select task list"}
+          {this.state.selectedTaskListId ? <Tasks tasks={this.state.tasks} /> : "Select task list"}
         </main>
+
+        <TaskListModal
+          isModalOpen={this.state.isModalOpen}
+          handleModalClose={this.handleModalClose}
+          taskListTitle={this.state.taskListTitle}
+          handleChangeTaskListTitle={this.handleChangeTaskListTitle}
+          handleCreateTaskListCancel={this.handleCreateTaskListCancel}
+          handleCreateTaskList={this.handleCreateTaskList}
+        />
       </div>
     );
   }

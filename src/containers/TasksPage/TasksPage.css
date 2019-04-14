@@ -35,6 +35,10 @@
 }
 
 @media (min-width: 600px) {
+  :root {
+    --drawerWidth: 300px;
+  }
+
   .tasks__toolbar {
     min-height: 64px;
   }
