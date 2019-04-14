@@ -11,7 +11,6 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ViewList from "@material-ui/icons/ViewList";
-// import Code from "@material-ui/icons/Code";
 import Info from "@material-ui/icons/Info";
 import AddIcon from "@material-ui/icons/Add";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
@@ -42,10 +41,8 @@ class TaskLists extends Component {
     this.handleMenuClose();
   };
 
-  handleEditTaskList = (event) => {
-    console.log(3);
-    this.props.handleModalOpen("edit", this.state.openedMenuIdOfTaskList)(event);
-    // this.props.editTaskList(this.state.openedMenuIdOfTaskList);
+  handleUpdateTaskList = (event) => {
+    this.props.handleUTaskList(this.state.openedMenuIdOfTaskList);
     this.handleMenuClose();
   };
 
@@ -56,7 +53,15 @@ class TaskLists extends Component {
       <div>
         <List subheader={<ListSubheader component="div">Task Lists</ListSubheader>}>
           {this.props.taskLists.map((taskList) => (
-            <ListItem button key={taskList.id} onClick={this.handleListTasksOfList(taskList.id)}>
+            <ListItem
+              button
+              key={taskList.id}
+              onClick={this.handleListTasksOfList(taskList.id)}
+              style={{
+                backgroundColor:
+                  this.props.selectedTaskListId === taskList.id && "rgba(0, 0, 0, 0.08)"
+              }}
+            >
               <ListItemIcon>
                 <ViewList />
               </ListItemIcon>
@@ -77,14 +82,14 @@ class TaskLists extends Component {
                   open={Boolean(anchorEl)}
                   onClose={this.handleMenuClose}
                 >
-                  <MenuItem onClick={this.handleEditTaskList}>Edit</MenuItem>
+                  <MenuItem onClick={this.handleUpdateTaskList}>Update</MenuItem>
                   <MenuItem onClick={this.handleDeleteTaskList}>Delete</MenuItem>
                 </Menu>
               </ListItemSecondaryAction>
             </ListItem>
           ))}
 
-          <ListItem button key={"Create new list"} onClick={this.props.handleModalOpen("create")}>
+          <ListItem button key={"Create new list"} onClick={this.props.handleModalOpen}>
             <ListItemIcon>
               <AddIcon />
             </ListItemIcon>

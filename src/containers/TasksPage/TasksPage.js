@@ -21,50 +21,19 @@ export default class TasksPage extends Component {
     tasks: [],
     isModalOpen: false,
     taskListTitle: "",
-    editedTaskListId: null
+    updatedTaskListId: null
   };
 
   componentDidMount() {
     this.listTaskLists();
   }
 
-  handleModalOpen = (type, id) => () => {
-    if (type === "create") {
-      this.setState({ isModalOpen: true });
-      return;
-    }
-    console.log(1);
-
-    if (type === "edit" && id) {
-      console.log(2);
-      this.getTaskListById(id);
-      // this.setState({ isModalOpen: true });
-      return;
-    }
+  handleModalOpen = () => {
+    this.setState({ isModalOpen: true });
   };
 
   handleModalClose = () => {
     this.setState({ isModalOpen: false });
-  };
-
-  getTaskListById = (id) => {
-    window.gapi.client.tasks.tasklists
-      .get({
-        tasklist: id
-      })
-      .then((response) => {
-        const taskList = response.result;
-        if (taskList && taskList.id) {
-          this.setState({
-            isModalOpen: true,
-            editedTaskListId: taskList.id,
-            taskListTitle: taskList.title
-          });
-        } else {
-          console.log("No task lists found.");
-        }
-      })
-      .catch(console.log);
   };
 
   listTaskLists = () => {
@@ -77,6 +46,26 @@ export default class TasksPage extends Component {
 
         if (taskLists && taskLists.length > 0) {
           this.setState({ taskLists });
+        } else {
+          console.log("No task lists found.");
+        }
+      })
+      .catch(console.log);
+  };
+
+  taskListById = (id) => {
+    window.gapi.client.tasks.tasklists
+      .get({
+        tasklist: id
+      })
+      .then((response) => {
+        const taskList = response.result;
+        if (taskList && taskList.id) {
+          this.setState({
+            isModalOpen: true, // open modal after receiving the response
+            updatedTaskListId: taskList.id,
+            taskListTitle: taskList.title
+          });
         } else {
           console.log("No task lists found.");
         }
@@ -100,31 +89,27 @@ export default class TasksPage extends Component {
       .catch(console.log);
   };
 
-  handleChangeTaskListTitle = (taskListTitle) => {
-    this.setState({ taskListTitle });
-  };
-
-  handleCreateTaskList = () => {
+  // CU - create-update
+  handleCUTaskList = (title) => {
     this.handleModalClose();
-    if (this.state.taskListTitle) {
-      if (this.state.editedTaskListId) {
-        this.editTaskList(this.state.editedTaskListId, this.state.taskListTitle);
+    if (title) {
+      if (this.state.updatedTaskListId) {
+        this.updateTaskList(this.state.updatedTaskListId, title);
       } else {
-        this.createNewTaskList(this.state.taskListTitle);
+        this.createNewTaskList(title);
       }
     }
   };
 
-  handleCreateTaskListCancel = () => {
+  handleCUTaskListCancel = () => {
     this.handleModalClose();
-    this.setState({ taskListTitle: "", editedTaskListId: null });
+    this.setState({ taskListTitle: "", updatedTaskListId: null });
   };
 
   createNewTaskList = (title) => {
     window.gapi.client.tasks.tasklists
       .insert({ title })
       .then((response) => {
-        this.setState({ taskListTitle: "" });
         const newTask = response.result;
 
         if (newTask && newTask.id) {
@@ -136,13 +121,17 @@ export default class TasksPage extends Component {
       .catch(console.log);
   };
 
-  handleEditTaskList = () => {};
+  // U - update
+  handleUTaskList = (id) => {
+    // this.setState({ isModalOpen: true }); //it will be better to open the modal after receiving the response
+    this.taskListById(id);
+  };
 
-  editTaskList = (id, title) => {
+  updateTaskList = (id, title) => {
     window.gapi.client.tasks.tasklists
       .update({ tasklist: id, id, title })
       .then((response) => {
-        this.setState({ taskListTitle: "" });
+        this.setState({ taskListTitle: "", updatedTaskListId: null });
         const updatedTaskList = response.result;
 
         if (updatedTaskList && updatedTaskList.id) {
@@ -196,9 +185,10 @@ export default class TasksPage extends Component {
 
           <TaskLists
             taskLists={this.state.taskLists}
+            selectedTaskListId={this.state.selectedTaskListId}
             listTasksOfList={this.listTasksOfList}
             handleModalOpen={this.handleModalOpen}
-            editTaskList={this.editTaskList}
+            handleUTaskList={this.handleUTaskList}
             deleteTaskList={this.deleteTaskList}
           />
         </Drawer>
@@ -210,11 +200,10 @@ export default class TasksPage extends Component {
 
         <TaskListModal
           isModalOpen={this.state.isModalOpen}
-          handleModalClose={this.handleModalClose}
-          taskListTitle={this.state.taskListTitle}
-          handleChangeTaskListTitle={this.handleChangeTaskListTitle}
-          handleCreateTaskListCancel={this.handleCreateTaskListCancel}
-          handleCreateTaskList={this.handleCreateTaskList}
+          isUpdate={Boolean(this.state.updatedTaskListId)}
+          taskListTitle={Boolean(this.state.updatedTaskListId) ? this.state.taskListTitle : ""}
+          onCancel={this.handleCUTaskListCancel}
+          onSubmit={this.handleCUTaskList}
         />
       </div>
     );
