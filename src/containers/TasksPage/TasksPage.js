@@ -20,19 +20,51 @@ export default class TasksPage extends Component {
     taskLists: [],
     tasks: [],
     isModalOpen: false,
-    taskListTitle: ""
+    taskListTitle: "",
+    editedTaskListId: null
   };
 
   componentDidMount() {
     this.listTaskLists();
   }
 
-  handleModalOpen = () => {
-    this.setState({ isModalOpen: true });
+  handleModalOpen = (type, id) => () => {
+    if (type === "create") {
+      this.setState({ isModalOpen: true });
+      return;
+    }
+    console.log(1);
+
+    if (type === "edit" && id) {
+      console.log(2);
+      this.getTaskListById(id);
+      // this.setState({ isModalOpen: true });
+      return;
+    }
   };
 
   handleModalClose = () => {
     this.setState({ isModalOpen: false });
+  };
+
+  getTaskListById = (id) => {
+    window.gapi.client.tasks.tasklists
+      .get({
+        tasklist: id
+      })
+      .then((response) => {
+        const taskList = response.result;
+        if (taskList && taskList.id) {
+          this.setState({
+            isModalOpen: true,
+            editedTaskListId: taskList.id,
+            taskListTitle: taskList.title
+          });
+        } else {
+          console.log("No task lists found.");
+        }
+      })
+      .catch(console.log);
   };
 
   listTaskLists = () => {
@@ -75,13 +107,17 @@ export default class TasksPage extends Component {
   handleCreateTaskList = () => {
     this.handleModalClose();
     if (this.state.taskListTitle) {
-      this.createNewTaskList(this.state.taskListTitle);
+      if (this.state.editedTaskListId) {
+        this.editTaskList(this.state.editedTaskListId, this.state.taskListTitle);
+      } else {
+        this.createNewTaskList(this.state.taskListTitle);
+      }
     }
   };
 
   handleCreateTaskListCancel = () => {
     this.handleModalClose();
-    this.setState({ taskListTitle: "" });
+    this.setState({ taskListTitle: "", editedTaskListId: null });
   };
 
   createNewTaskList = (title) => {
@@ -100,10 +136,13 @@ export default class TasksPage extends Component {
       .catch(console.log);
   };
 
+  handleEditTaskList = () => {};
+
   editTaskList = (id, title) => {
     window.gapi.client.tasks.tasklists
-      .update({ tasklist: id, id: id, title: "updated" })
+      .update({ tasklist: id, id, title })
       .then((response) => {
+        this.setState({ taskListTitle: "" });
         const updatedTaskList = response.result;
 
         if (updatedTaskList && updatedTaskList.id) {

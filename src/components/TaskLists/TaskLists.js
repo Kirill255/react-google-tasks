@@ -43,7 +43,9 @@ class TaskLists extends Component {
   };
 
   handleEditTaskList = (event) => {
-    this.props.editTaskList(this.state.openedMenuIdOfTaskList);
+    console.log(3);
+    this.props.handleModalOpen("edit", this.state.openedMenuIdOfTaskList)(event);
+    // this.props.editTaskList(this.state.openedMenuIdOfTaskList);
     this.handleMenuClose();
   };
 
@@ -82,7 +84,7 @@ class TaskLists extends Component {
             </ListItem>
           ))}
 
-          <ListItem button key={"Create new list"} onClick={this.props.handleModalOpen}>
+          <ListItem button key={"Create new list"} onClick={this.props.handleModalOpen("create")}>
             <ListItemIcon>
               <AddIcon />
             </ListItemIcon>
