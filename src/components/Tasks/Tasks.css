@@ -1,4 +1,16 @@
-.tasks__container {
+.tasks__card {
   width: 100%;
   background-color: #fff;
+}
+/* .tasks__container {
+  width: 100%;
+  background-color: #fff;
+} */
+
+.tasks__add-button {
+  margin: 8px auto !important;
+}
+
+.tasks__add-button_icon {
+  margin-right: 8px;
 }

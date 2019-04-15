@@ -39,7 +39,7 @@ export default class TaskListModal extends Component {
 
     return (
       <div>
-        <Dialog open={isModalOpen} onClose={this.handleClose}>
+        <Dialog open={isModalOpen} onClose={this.handleClose} fullWidth>
           <DialogTitle id="form-dialog-title">
             {isUpdate ? `Update ${taskListTitle}` : "Create new task list"}
           </DialogTitle>

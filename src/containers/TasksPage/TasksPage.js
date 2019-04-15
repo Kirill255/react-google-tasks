@@ -73,16 +73,16 @@ export default class TasksPage extends Component {
       .catch(console.log);
   };
 
-  listTasksOfList = (id) => {
+  listTasksOfList = (id, title) => {
     window.gapi.client.tasks.tasks
       .list({ tasklist: id })
       .then((response) => {
         const tasks = response.result.items;
 
         if (tasks && tasks.length > 0) {
-          this.setState({ tasks, selectedTaskListId: id });
+          this.setState({ tasks, selectedTaskListId: id, selectedTaskListTitle: title });
         } else {
-          this.setState({ tasks: [], selectedTaskListId: id });
+          this.setState({ tasks: [], selectedTaskListId: id, selectedTaskListTitle: title });
           console.log("No tasks of this list found.");
         }
       })
@@ -158,6 +158,45 @@ export default class TasksPage extends Component {
       .catch(console.log);
   };
 
+  // id списка можно тоже передавать, но мы возьмём его из selectedTaskListId
+  handleCUTask = (title = "newtask", notes = null, due = null) => {
+    window.gapi.client.tasks.tasks
+      .insert({ tasklist: this.state.selectedTaskListId, title, notes, due })
+      .then((response) => {
+        const newTask = response.result;
+
+        if (newTask && newTask.id) {
+          const newTasks = [newTask, ...this.state.tasks];
+          this.setState({ tasks: newTasks });
+        } else {
+          console.log("Something went wrong.");
+        }
+      })
+      .catch(console.log);
+  };
+
+  handleCUTaskCancel = () => {};
+
+  createNewTask = () => {};
+
+  updateTask = () => {};
+
+  deleteTask = (id) => {
+    window.gapi.client.tasks.tasks
+      .delete({ tasklist: this.state.selectedTaskListId, task: id })
+      .then((response) => {
+        const result = response.result; // If successful, this method returns an empty response body.
+
+        if (!result) {
+          const newTasks = this.state.tasks.filter((task) => task.id !== id);
+          this.setState({ tasks: newTasks });
+        } else {
+          console.log("Something went wrong.");
+        }
+      })
+      .catch(console.log);
+  };
+
   render() {
     return (
       <div className="tasks__page">
@@ -195,7 +234,16 @@ export default class TasksPage extends Component {
         <main className="tasks__content">
           <div className="tasks__toolbar" />
 
-          {this.state.selectedTaskListId ? <Tasks tasks={this.state.tasks} /> : "Select task list"}
+          {this.state.selectedTaskListId ? (
+            <Tasks
+              tasks={this.state.tasks}
+              title={this.state.selectedTaskListTitle}
+              handleCUTask={this.handleCUTask}
+              deleteTask={this.deleteTask}
+            />
+          ) : (
+            "Select task list"
+          )}
         </main>
 
         <TaskListModal

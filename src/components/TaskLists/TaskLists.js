@@ -24,8 +24,8 @@ class TaskLists extends Component {
     openedMenuIdOfTaskList: null
   };
 
-  handleListTasksOfList = (id) => (event) => {
-    this.props.listTasksOfList(id);
+  handleListTasksOfList = (id, title) => (event) => {
+    this.props.listTasksOfList(id, title);
   };
 
   handleMenuClick = (id) => (event) => {
@@ -56,7 +56,7 @@ class TaskLists extends Component {
             <ListItem
               button
               key={taskList.id}
-              onClick={this.handleListTasksOfList(taskList.id)}
+              onClick={this.handleListTasksOfList(taskList.id, taskList.title)}
               style={{
                 backgroundColor:
                   this.props.selectedTaskListId === taskList.id && "rgba(0, 0, 0, 0.08)"
