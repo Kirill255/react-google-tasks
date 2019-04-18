@@ -31,6 +31,10 @@ export default class Task extends Component {
     });
   };
 
+  handleUpdateTask = (id) => () => {
+    this.props.handleUTask(id);
+  };
+
   handleDeleteTask = (id) => () => {
     this.props.deleteTask(id);
   };
@@ -45,7 +49,7 @@ export default class Task extends Component {
         />
         <ListItemText primary={this.props.title} />
         <ListItemSecondaryAction>
-          <IconButton>
+          <IconButton onClick={this.handleUpdateTask(this.props.id)}>
             <Edit />
           </IconButton>
           <IconButton onClick={this.handleDeleteTask(this.props.id)}>

@@ -11,17 +11,22 @@ import Button from "@material-ui/core/Button";
 import TaskLists from "../../components/TaskLists/TaskLists";
 import Tasks from "../../components/Tasks/Tasks";
 import TaskListModal from "../../components/TaskListModal/TaskListModal";
+import TaskModal from "../../components/TaskModal/TaskModal";
 
 import "./TasksPage.css";
 
 export default class TasksPage extends Component {
   state = {
     selectedTaskListId: null,
+    selectedTaskListTitle: "",
     taskLists: [],
     tasks: [],
     isModalOpen: false,
+    isModalTaskOpen: false,
     taskListTitle: "",
-    updatedTaskListId: null
+    taskTitle: "",
+    updatedTaskListId: null,
+    updatedTaskId: null
   };
 
   componentDidMount() {
@@ -35,6 +40,18 @@ export default class TasksPage extends Component {
   handleModalClose = () => {
     this.setState({ isModalOpen: false });
   };
+
+  handleModalTaskOpen = () => {
+    this.setState({ isModalTaskOpen: true });
+  };
+
+  handleModalTaskClose = () => {
+    this.setState({ isModalTaskOpen: false });
+  };
+
+  /*
+   ** All
+   */
 
   listTaskLists = () => {
     window.gapi.client.tasks.tasklists
@@ -73,7 +90,30 @@ export default class TasksPage extends Component {
       .catch(console.log);
   };
 
-  listTasksOfList = (id, title) => {
+  taskById = (id) => {
+    window.gapi.client.tasks.tasks
+      .get({
+        tasklist: this.state.selectedTaskListId,
+        task: id
+      })
+      .then((response) => {
+        const task = response.result;
+        if (task && task.id) {
+          this.setState({
+            isModalTaskOpen: true, // open modal after receiving the response
+            updatedTaskId: task.id,
+            taskTitle: task.title
+            // taskNote: task.note,
+            // taskDue: task.due
+          });
+        } else {
+          console.log("No task lists found.");
+        }
+      })
+      .catch(console.log);
+  };
+
+  listTasksOfList = (id, title = this.state.selectedTaskListTitle) => {
     window.gapi.client.tasks.tasks
       .list({ tasklist: id })
       .then((response) => {
@@ -88,6 +128,10 @@ export default class TasksPage extends Component {
       })
       .catch(console.log);
   };
+
+  /*
+   ** TaskList
+   */
 
   // CU - create-update
   handleCUTaskList = (title) => {
@@ -158,10 +202,29 @@ export default class TasksPage extends Component {
       .catch(console.log);
   };
 
-  // id списка можно тоже передавать, но мы возьмём его из selectedTaskListId
-  handleCUTask = (title = "newtask", notes = null, due = null) => {
+  /*
+   ** Task
+   */
+
+  handleCUTask = (task) => {
+    this.handleModalTaskClose();
+    if (task.title) {
+      if (this.state.updatedTaskId) {
+        this.updateTask(this.state.updatedTaskId, task.title);
+      } else {
+        this.createNewTask(task.title);
+      }
+    }
+  };
+
+  handleCUTaskCancel = () => {
+    this.handleModalTaskClose();
+    this.setState({ taskTitle: "", updatedTaskId: null });
+  };
+
+  createNewTask = (title) => {
     window.gapi.client.tasks.tasks
-      .insert({ tasklist: this.state.selectedTaskListId, title, notes, due })
+      .insert({ tasklist: this.state.selectedTaskListId, title })
       .then((response) => {
         const newTask = response.result;
 
@@ -175,11 +238,25 @@ export default class TasksPage extends Component {
       .catch(console.log);
   };
 
-  handleCUTaskCancel = () => {};
+  handleUTask = (id) => {
+    this.taskById(id);
+  };
 
-  createNewTask = () => {};
+  updateTask = (id, title) => {
+    window.gapi.client.tasks.tasks
+      .update({ tasklist: this.state.selectedTaskListId, task: id, id, title })
+      .then((response) => {
+        this.setState({ taskTitle: "", updatedTaskId: null });
+        const updatedTask = response.result;
 
-  updateTask = () => {};
+        if (updatedTask && updatedTask.id) {
+          this.listTasksOfList(this.state.selectedTaskListId);
+        } else {
+          console.log("Something went wrong.");
+        }
+      })
+      .catch(console.log);
+  };
 
   deleteTask = (id) => {
     window.gapi.client.tasks.tasks
@@ -238,7 +315,8 @@ export default class TasksPage extends Component {
             <Tasks
               tasks={this.state.tasks}
               title={this.state.selectedTaskListTitle}
-              handleCUTask={this.handleCUTask}
+              handleModalOpen={this.handleModalTaskOpen}
+              handleUTask={this.handleUTask}
               deleteTask={this.deleteTask}
             />
           ) : (
@@ -252,6 +330,14 @@ export default class TasksPage extends Component {
           taskListTitle={Boolean(this.state.updatedTaskListId) ? this.state.taskListTitle : ""}
           onCancel={this.handleCUTaskListCancel}
           onSubmit={this.handleCUTaskList}
+        />
+
+        <TaskModal
+          isModalOpen={this.state.isModalTaskOpen}
+          isUpdate={Boolean(this.state.updatedTaskId)}
+          taskTitle={Boolean(this.state.updatedTaskId) ? this.state.taskTitle : ""}
+          onCancel={this.handleCUTaskCancel}
+          onSubmit={this.handleCUTask}
         />
       </div>
     );

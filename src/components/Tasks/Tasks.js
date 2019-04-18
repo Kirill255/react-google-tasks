@@ -22,7 +22,7 @@ class Tasks extends Component {
           <CardHeader
             title={this.props.title}
             action={
-              <IconButton onClick={() => this.props.handleCUTask()}>
+              <IconButton onClick={() => this.props.handleModalOpen()}>
                 <AddCircleOutline />
               </IconButton>
             }
@@ -34,6 +34,7 @@ class Tasks extends Component {
                   key={task.id}
                   id={task.id}
                   title={task.title}
+                  handleUTask={this.props.handleUTask}
                   deleteTask={this.props.deleteTask}
                 />
               ))}
@@ -51,7 +52,7 @@ class Tasks extends Component {
             <Button
               className="tasks__add-button"
               color="primary"
-              onClick={() => this.props.handleCUTask()}
+              onClick={() => this.props.handleModalOpen()}
             >
               <AddCircleOutline className="tasks__add-button_icon" />
               Create Task
