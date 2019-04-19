@@ -28,12 +28,14 @@ class Tasks extends Component {
             }
           />
           {this.props.tasks.length ? (
-            <List>
+            <List className="tasks__list">
               {this.props.tasks.map((task) => (
                 <Task
                   key={task.id}
                   id={task.id}
                   title={task.title}
+                  notes={task.notes ? task.notes : null}
+                  due={task.due ? task.due : null}
                   handleUTask={this.props.handleUTask}
                   deleteTask={this.props.deleteTask}
                 />

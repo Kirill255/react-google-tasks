@@ -45,6 +45,7 @@
 }
 
 .tasks__content {
+  width: calc(100% - var(--drawerWidth)) !important;
   flex-grow: 1;
   background-color: #fafafa;
   padding: 24px;

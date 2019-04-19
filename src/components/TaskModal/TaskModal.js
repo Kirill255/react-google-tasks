@@ -10,21 +10,21 @@ import { MuiPickersUtilsProvider, DatePicker } from "material-ui-pickers";
 import DateFnsUtils from "@date-io/date-fns";
 
 export default class TaskModal extends Component {
-  state = { title: "", notes: "", due: null, selectedDate: null };
+  state = { title: "", notes: "", due: null };
 
   handleDateChange = (date) => {
-    this.setState({ selectedDate: date });
+    this.setState({ due: date });
   };
 
   handleClose = () => {
     this.props.onCancel();
-    this.setState({ title: "", notes: "", due: null, selectedDate: null });
+    this.setState({ title: "", notes: "", due: null });
   };
 
   handleSubmit = () => {
     if (this.state.title) {
       this.props.onSubmit(this.state);
-      this.setState({ title: "", notes: "", due: null, selectedDate: null });
+      this.setState({ title: "", notes: "", due: null });
     }
   };
 
@@ -46,11 +46,10 @@ export default class TaskModal extends Component {
   };
 
   render() {
-    const { selectedDate } = this.state;
-    const { isModalOpen, isUpdate, taskTitle, taskNotes } = this.props;
+    const { isModalOpen, isUpdate, taskTitle, taskNotes, taskDue } = this.props;
     const valueTitle = isUpdate && !this.state.title ? taskTitle : this.state.title;
     const valueNotes = isUpdate && !this.state.notes ? taskNotes : this.state.notes;
-    // const valueDue = isUpdate && !this.state.due ? taskListTitle : this.state.due;
+    const valueDue = isUpdate && !this.state.due ? taskDue : this.state.due;
 
     return (
       <div>
@@ -91,7 +90,7 @@ export default class TaskModal extends Component {
                 clearable
                 format="dd/MM/yyyy"
                 minDate={new Date()}
-                value={selectedDate}
+                value={valueDue}
                 onChange={this.handleDateChange}
               />
             </MuiPickersUtilsProvider>

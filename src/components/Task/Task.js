@@ -1,10 +1,13 @@
 import React, { Component } from "react";
 
+import Typography from "@material-ui/core/Typography";
+import Chip from "@material-ui/core/Chip";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
+import DateRange from "@material-ui/icons/DateRange";
 import Edit from "@material-ui/icons/Edit";
 import Delete from "@material-ui/icons/Delete";
 
@@ -41,13 +44,30 @@ export default class Task extends Component {
 
   render() {
     return (
-      <ListItem dense button onClick={this.handleToggle(this.props.id)}>
+      <ListItem className="task__item" dense button onClick={this.handleToggle(this.props.id)}>
         <Checkbox
           checked={this.state.checked.indexOf(this.props.id) !== -1}
           tabIndex={-1}
           disableRipple
         />
-        <ListItemText primary={this.props.title} />
+        <ListItemText disableTypography className="task__item_text">
+          <Typography variant="h6" gutterBottom color="textPrimary">
+            {this.props.title}
+          </Typography>
+          {this.props.notes && (
+            <Typography gutterBottom color="textSecondary">
+              {this.props.notes}
+            </Typography>
+          )}
+          {this.props.due && (
+            <Chip
+              icon={<DateRange />}
+              label={this.props.due}
+              className="task__item_chip"
+              variant="outlined"
+            />
+          )}
+        </ListItemText>
         <ListItemSecondaryAction>
           <IconButton onClick={this.handleUpdateTask(this.props.id)}>
             <Edit />

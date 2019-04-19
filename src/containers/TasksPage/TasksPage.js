@@ -25,6 +25,8 @@ export default class TasksPage extends Component {
     isModalTaskOpen: false,
     taskListTitle: "",
     taskTitle: "",
+    taskNotes: "",
+    taskDue: null,
     updatedTaskListId: null,
     updatedTaskId: null
   };
@@ -102,9 +104,9 @@ export default class TasksPage extends Component {
           this.setState({
             isModalTaskOpen: true, // open modal after receiving the response
             updatedTaskId: task.id,
-            taskTitle: task.title
-            // taskNote: task.note,
-            // taskDue: task.due
+            taskTitle: task.title,
+            taskNotes: task.notes || "",
+            taskDue: task.due || null
           });
         } else {
           console.log("No task lists found.");
@@ -113,11 +115,14 @@ export default class TasksPage extends Component {
       .catch(console.log);
   };
 
+  // ???????????????
   listTasksOfList = (id, title = this.state.selectedTaskListTitle) => {
     window.gapi.client.tasks.tasks
-      .list({ tasklist: id })
+      .list({ tasklist: id, showHidden: true })
       .then((response) => {
         const tasks = response.result.items;
+        console.log(response);
+        console.log(tasks);
 
         if (tasks && tasks.length > 0) {
           this.setState({ tasks, selectedTaskListId: id, selectedTaskListTitle: title });
@@ -208,11 +213,11 @@ export default class TasksPage extends Component {
 
   handleCUTask = (task) => {
     this.handleModalTaskClose();
-    if (task.title) {
+    if (Object.keys(task).length) {
       if (this.state.updatedTaskId) {
-        this.updateTask(this.state.updatedTaskId, task.title);
+        this.updateTask(this.state.updatedTaskId, task);
       } else {
-        this.createNewTask(task.title);
+        this.createNewTask(task);
       }
     }
   };
@@ -222,9 +227,9 @@ export default class TasksPage extends Component {
     this.setState({ taskTitle: "", updatedTaskId: null });
   };
 
-  createNewTask = (title) => {
+  createNewTask = (task) => {
     window.gapi.client.tasks.tasks
-      .insert({ tasklist: this.state.selectedTaskListId, title })
+      .insert({ tasklist: this.state.selectedTaskListId, ...task })
       .then((response) => {
         const newTask = response.result;
 
@@ -242,11 +247,11 @@ export default class TasksPage extends Component {
     this.taskById(id);
   };
 
-  updateTask = (id, title) => {
+  updateTask = (id, task) => {
     window.gapi.client.tasks.tasks
-      .update({ tasklist: this.state.selectedTaskListId, task: id, id, title })
+      .update({ tasklist: this.state.selectedTaskListId, task: id, id, ...task })
       .then((response) => {
-        this.setState({ taskTitle: "", updatedTaskId: null });
+        this.setState({ taskTitle: "", taskNotes: "", taskDue: null, updatedTaskId: null });
         const updatedTask = response.result;
 
         if (updatedTask && updatedTask.id) {
@@ -336,6 +341,8 @@ export default class TasksPage extends Component {
           isModalOpen={this.state.isModalTaskOpen}
           isUpdate={Boolean(this.state.updatedTaskId)}
           taskTitle={Boolean(this.state.updatedTaskId) ? this.state.taskTitle : ""}
+          taskNotes={Boolean(this.state.updatedTaskId) ? this.state.taskNotes : ""}
+          taskDue={Boolean(this.state.updatedTaskId) ? this.state.taskDue : ""}
           onCancel={this.handleCUTaskCancel}
           onSubmit={this.handleCUTask}
         />

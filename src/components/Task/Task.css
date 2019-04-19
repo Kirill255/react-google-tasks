@@ -1,0 +1,9 @@
+.task__item_text {
+  overflow-wrap: break-word;
+  margin-right: 55px;
+}
+
+.task__item_chip {
+  margin: 8px;
+  margin-left: 0;
+}
