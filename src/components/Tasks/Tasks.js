@@ -40,6 +40,7 @@ class Tasks extends Component {
                   handleUTask={this.props.handleUTask}
                   deleteTask={this.props.deleteTask}
                   handleTaskComplete={this.props.handleTaskComplete}
+                  isRequest={this.props.isRequest}
                 />
               ))}
             </List>

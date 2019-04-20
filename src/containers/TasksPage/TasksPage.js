@@ -28,7 +28,8 @@ export default class TasksPage extends Component {
     taskNotes: "",
     taskDue: null,
     updatedTaskListId: null,
-    updatedTaskId: null
+    updatedTaskId: null,
+    isRequest: false
   };
 
   componentDidMount() {
@@ -121,13 +122,21 @@ export default class TasksPage extends Component {
       .list({ tasklist: id, showHidden: true })
       .then((response) => {
         const tasks = response.result.items;
-        console.log(response);
-        console.log(tasks);
 
         if (tasks && tasks.length > 0) {
-          this.setState({ tasks, selectedTaskListId: id, selectedTaskListTitle: title });
+          this.setState({
+            tasks,
+            selectedTaskListId: id,
+            selectedTaskListTitle: title,
+            isRequest: false
+          });
         } else {
-          this.setState({ tasks: [], selectedTaskListId: id, selectedTaskListTitle: title });
+          this.setState({
+            tasks: [],
+            selectedTaskListId: id,
+            selectedTaskListTitle: title,
+            isRequest: false
+          });
           console.log("No tasks of this list found.");
         }
       })
@@ -282,9 +291,12 @@ export default class TasksPage extends Component {
   };
 
   handleTaskComplete = (id, status) => {
+    this.setState({ isRequest: true });
+
     window.gapi.client.tasks.tasks
       .update({ tasklist: this.state.selectedTaskListId, task: id, id, status })
       .then((response) => {
+        // this.setState({ isRequest: false }); // перенёс в listTasksOfList
         const updatedTask = response.result;
 
         if (updatedTask && updatedTask.id) {
@@ -341,6 +353,7 @@ export default class TasksPage extends Component {
               handleUTask={this.handleUTask}
               deleteTask={this.deleteTask}
               handleTaskComplete={this.handleTaskComplete}
+              isRequest={this.state.isRequest}
             />
           ) : (
             "Select task list"

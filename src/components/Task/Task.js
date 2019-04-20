@@ -36,10 +36,15 @@ export default class Task extends Component {
       <ListItem
         className="task__item"
         dense
-        button
-        onClick={this.handleToggle(this.props.id, this.props.status)}
+        style={{ textDecoration: this.props.status === "completed" ? "line-through" : null }}
       >
-        <Checkbox checked={this.props.status === "completed"} tabIndex={-1} disableRipple />
+        <Checkbox
+          onChange={this.handleToggle(this.props.id, this.props.status)}
+          checked={this.props.status === "completed"}
+          tabIndex={-1}
+          disableRipple
+          disabled={this.props.isRequest}
+        />
         <ListItemText disableTypography className="task__item_text">
           <Typography variant="h6" gutterBottom color="textPrimary">
             {this.props.title}
