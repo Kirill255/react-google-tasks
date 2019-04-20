@@ -10,7 +10,26 @@ import { MuiPickersUtilsProvider, DatePicker } from "material-ui-pickers";
 import DateFnsUtils from "@date-io/date-fns";
 
 export default class TaskModal extends Component {
-  state = { title: "", notes: "", due: null };
+  state = {
+    title: "",
+    notes: "",
+    due: null
+  };
+
+  static getDerivedStateFromProps(props, state) {
+    // проверяю я только title, остальные параметры необязательные
+    if (props.isUpdate) {
+      if (props.taskTitle && !state.title) {
+        return {
+          title: props.taskTitle,
+          notes: props.taskNotes || "",
+          due: props.taskDue || null
+        };
+      }
+    }
+
+    return null;
+  }
 
   handleDateChange = (date) => {
     this.setState({ due: date });
@@ -46,16 +65,13 @@ export default class TaskModal extends Component {
   };
 
   render() {
-    const { isModalOpen, isUpdate, taskTitle, taskNotes, taskDue } = this.props;
-    const valueTitle = isUpdate && !this.state.title ? taskTitle : this.state.title;
-    const valueNotes = isUpdate && !this.state.notes ? taskNotes : this.state.notes;
-    const valueDue = isUpdate && !this.state.due ? taskDue : this.state.due;
+    const { isModalOpen, isUpdate } = this.props;
 
     return (
       <div>
         <Dialog open={isModalOpen} onClose={this.handleClose} fullWidth>
           <DialogTitle id="form-dialog-title">
-            {isUpdate ? `Update ${taskTitle}` : "Create new task"}
+            {isUpdate ? `Update ${this.props.taskTitle}` : "Create new task"}
           </DialogTitle>
           <DialogContent>
             <DialogContentText>Enter a title for the task. It's required.</DialogContentText>
@@ -66,7 +82,7 @@ export default class TaskModal extends Component {
               id="title"
               label="Title"
               type="text"
-              value={valueTitle}
+              value={this.state.title}
               onChange={this.onChangeTitle}
               onKeyUp={this.handleKeyUp}
               fullWidth
@@ -77,7 +93,7 @@ export default class TaskModal extends Component {
               id="notes"
               label="Notes"
               type="text"
-              value={valueNotes}
+              value={this.state.notes}
               onChange={this.onChangeNote}
               fullWidth
               multiline
@@ -90,7 +106,7 @@ export default class TaskModal extends Component {
                 clearable
                 format="dd/MM/yyyy"
                 minDate={new Date()}
-                value={valueDue}
+                value={this.state.due}
                 onChange={this.handleDateChange}
               />
             </MuiPickersUtilsProvider>

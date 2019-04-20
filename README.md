@@ -37,3 +37,5 @@ https://material-ui-pickers.dev/
 ## Other
 
 https://github.com/google/google-api-javascript-client/issues/399
+
+https://stackoverflow.com/questions/40063468/react-component-initialize-state-from-props

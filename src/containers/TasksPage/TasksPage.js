@@ -224,7 +224,7 @@ export default class TasksPage extends Component {
 
   handleCUTaskCancel = () => {
     this.handleModalTaskClose();
-    this.setState({ taskTitle: "", updatedTaskId: null });
+    this.setState({ taskTitle: "", taskNotes: "", taskDue: null, updatedTaskId: null });
   };
 
   createNewTask = (task) => {
@@ -248,10 +248,12 @@ export default class TasksPage extends Component {
   };
 
   updateTask = (id, task) => {
+    this.setState({ taskTitle: "", taskNotes: "", taskDue: null, updatedTaskId: null }); // обнуляю перед запросом, иначе у меня приходят старые пропсы в TaskModal
+
     window.gapi.client.tasks.tasks
       .update({ tasklist: this.state.selectedTaskListId, task: id, id, ...task })
       .then((response) => {
-        this.setState({ taskTitle: "", taskNotes: "", taskDue: null, updatedTaskId: null });
+        // this.setState({ taskTitle: "", taskNotes: "", taskDue: null, updatedTaskId: null });
         const updatedTask = response.result;
 
         if (updatedTask && updatedTask.id) {
@@ -342,7 +344,7 @@ export default class TasksPage extends Component {
           isUpdate={Boolean(this.state.updatedTaskId)}
           taskTitle={Boolean(this.state.updatedTaskId) ? this.state.taskTitle : ""}
           taskNotes={Boolean(this.state.updatedTaskId) ? this.state.taskNotes : ""}
-          taskDue={Boolean(this.state.updatedTaskId) ? this.state.taskDue : ""}
+          taskDue={Boolean(this.state.updatedTaskId) ? this.state.taskDue : null}
           onCancel={this.handleCUTaskCancel}
           onSubmit={this.handleCUTask}
         />
