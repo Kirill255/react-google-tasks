@@ -36,8 +36,10 @@ class Tasks extends Component {
                   title={task.title}
                   notes={task.notes ? task.notes : null}
                   due={task.due ? task.due : null}
+                  status={task.status}
                   handleUTask={this.props.handleUTask}
                   deleteTask={this.props.deleteTask}
+                  handleTaskComplete={this.props.handleTaskComplete}
                 />
               ))}
             </List>

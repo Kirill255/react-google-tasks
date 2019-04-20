@@ -18,20 +18,9 @@ export default class Task extends Component {
     checked: [0]
   };
 
-  handleToggle = (value) => () => {
-    const { checked } = this.state;
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    this.setState({
-      checked: newChecked
-    });
+  handleToggle = (id, status) => () => {
+    const newStatus = status === "completed" ? "needsAction" : "completed";
+    this.props.handleTaskComplete(id, newStatus);
   };
 
   handleUpdateTask = (id) => () => {
@@ -44,12 +33,13 @@ export default class Task extends Component {
 
   render() {
     return (
-      <ListItem className="task__item" dense button onClick={this.handleToggle(this.props.id)}>
-        <Checkbox
-          checked={this.state.checked.indexOf(this.props.id) !== -1}
-          tabIndex={-1}
-          disableRipple
-        />
+      <ListItem
+        className="task__item"
+        dense
+        button
+        onClick={this.handleToggle(this.props.id, this.props.status)}
+      >
+        <Checkbox checked={this.props.status === "completed"} tabIndex={-1} disableRipple />
         <ListItemText disableTypography className="task__item_text">
           <Typography variant="h6" gutterBottom color="textPrimary">
             {this.props.title}

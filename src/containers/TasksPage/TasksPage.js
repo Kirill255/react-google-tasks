@@ -281,6 +281,21 @@ export default class TasksPage extends Component {
       .catch(console.log);
   };
 
+  handleTaskComplete = (id, status) => {
+    window.gapi.client.tasks.tasks
+      .update({ tasklist: this.state.selectedTaskListId, task: id, id, status })
+      .then((response) => {
+        const updatedTask = response.result;
+
+        if (updatedTask && updatedTask.id) {
+          this.listTasksOfList(this.state.selectedTaskListId);
+        } else {
+          console.log("Something went wrong.");
+        }
+      })
+      .catch(console.log);
+  };
+
   render() {
     return (
       <div className="tasks__page">
@@ -325,6 +340,7 @@ export default class TasksPage extends Component {
               handleModalOpen={this.handleModalTaskOpen}
               handleUTask={this.handleUTask}
               deleteTask={this.deleteTask}
+              handleTaskComplete={this.handleTaskComplete}
             />
           ) : (
             "Select task list"
