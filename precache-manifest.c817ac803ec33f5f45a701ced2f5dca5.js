@@ -1,10 +1,10 @@
 self.__precacheManifest = [
   {
-    "revision": "6f11cd535cfa5c7d91ac",
-    "url": "/react-google-tasks/static/css/main.5ee34161.chunk.css"
+    "revision": "408c49f10b41291105d9",
+    "url": "/react-google-tasks/static/css/main.8118e458.chunk.css"
   },
   {
-    "revision": "6f11cd535cfa5c7d91ac",
+    "revision": "408c49f10b41291105d9",
     "url": "/react-google-tasks/static/js/main.3852b389.chunk.js"
   },
   {
@@ -16,7 +16,7 @@ self.__precacheManifest = [
     "url": "/react-google-tasks/static/js/2.7e96e397.chunk.js"
   },
   {
-    "revision": "167845bb63434ecbf0753299f7c7bb4e",
+    "revision": "53d32c89517513c569e7ee6c195e1bb8",
     "url": "/react-google-tasks/index.html"
   }
 ];
