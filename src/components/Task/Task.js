@@ -36,6 +36,8 @@ export default class Task extends Component {
       <ListItem
         className="task__item"
         dense
+        disableGutters
+        divider
         style={{ textDecoration: this.props.status === "completed" ? "line-through" : null }}
       >
         <Checkbox

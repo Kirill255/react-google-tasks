@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 
+import Paper from "@material-ui/core/Paper";
 import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
@@ -12,6 +13,7 @@ import TaskLists from "../../components/TaskLists/TaskLists";
 import Tasks from "../../components/Tasks/Tasks";
 import TaskListModal from "../../components/TaskListModal/TaskListModal";
 import TaskModal from "../../components/TaskModal/TaskModal";
+import About from "../../components/About/About";
 
 import "./TasksPage.css";
 
@@ -29,7 +31,8 @@ export default class TasksPage extends Component {
     taskDue: null,
     updatedTaskListId: null,
     updatedTaskId: null,
-    isRequest: false
+    isRequest: false,
+    isAbout: false
   };
 
   componentDidMount() {
@@ -128,7 +131,8 @@ export default class TasksPage extends Component {
             tasks,
             selectedTaskListId: id,
             selectedTaskListTitle: title,
-            isRequest: false
+            isRequest: false,
+            isAbout: false
           });
         } else {
           this.setState({
@@ -308,6 +312,10 @@ export default class TasksPage extends Component {
       .catch(console.log);
   };
 
+  getAbout = () => {
+    this.setState({ isAbout: true, selectedTaskListId: null });
+  };
+
   render() {
     return (
       <div className="tasks__page">
@@ -340,6 +348,7 @@ export default class TasksPage extends Component {
             handleModalOpen={this.handleModalOpen}
             handleUTaskList={this.handleUTaskList}
             deleteTaskList={this.deleteTaskList}
+            getAbout={this.getAbout}
           />
         </Drawer>
         <main className="tasks__content">
@@ -355,8 +364,14 @@ export default class TasksPage extends Component {
               handleTaskComplete={this.handleTaskComplete}
               isRequest={this.state.isRequest}
             />
+          ) : this.state.isAbout ? (
+            <About />
           ) : (
-            "Select task list"
+            <Paper style={{ padding: "8px" }} elevation={1}>
+              <Typography variant="h5" component="h3">
+                Select task list or create new.
+              </Typography>
+            </Paper>
           )}
         </main>
 

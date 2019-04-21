@@ -98,7 +98,7 @@ class TaskLists extends Component {
         </List>
         <Divider />
         <List>
-          <ListItem button key={"About"}>
+          <ListItem button key={"About"} onClick={this.props.getAbout}>
             <ListItemIcon>
               <Info />
             </ListItemIcon>
