@@ -8,6 +8,7 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
+import Snackbar from "@material-ui/core/Snackbar";
 
 import TaskLists from "../../components/TaskLists/TaskLists";
 import Tasks from "../../components/Tasks/Tasks";
@@ -32,7 +33,8 @@ export default class TasksPage extends Component {
     updatedTaskListId: null,
     updatedTaskId: null,
     isRequest: false,
-    isAbout: false
+    isAbout: false,
+    notification: null
   };
 
   componentDidMount() {
@@ -175,6 +177,8 @@ export default class TasksPage extends Component {
         const newTask = response.result;
 
         if (newTask && newTask.id) {
+          this.showNotification("List created successfuly");
+
           this.listTaskLists();
         } else {
           console.log("Something went wrong.");
@@ -197,6 +201,8 @@ export default class TasksPage extends Component {
         const updatedTaskList = response.result;
 
         if (updatedTaskList && updatedTaskList.id) {
+          this.showNotification("List updated successfuly");
+
           this.listTaskLists();
         } else {
           console.log("Something went wrong.");
@@ -212,6 +218,8 @@ export default class TasksPage extends Component {
         const result = response.result; // If successful, this method returns an empty response body.
 
         if (!result) {
+          this.showNotification("List removed successfuly");
+
           this.listTaskLists();
         } else {
           console.log("Something went wrong.");
@@ -247,6 +255,8 @@ export default class TasksPage extends Component {
         const newTask = response.result;
 
         if (newTask && newTask.id) {
+          this.showNotification("Task created successfuly");
+
           const newTasks = [newTask, ...this.state.tasks];
           this.setState({ tasks: newTasks });
         } else {
@@ -270,6 +280,8 @@ export default class TasksPage extends Component {
         const updatedTask = response.result;
 
         if (updatedTask && updatedTask.id) {
+          this.showNotification("Task updated successfuly");
+
           this.listTasksOfList(this.state.selectedTaskListId);
         } else {
           console.log("Something went wrong.");
@@ -285,6 +297,8 @@ export default class TasksPage extends Component {
         const result = response.result; // If successful, this method returns an empty response body.
 
         if (!result) {
+          this.showNotification("Task removed successfuly");
+
           const newTasks = this.state.tasks.filter((task) => task.id !== id);
           this.setState({ tasks: newTasks });
         } else {
@@ -304,6 +318,9 @@ export default class TasksPage extends Component {
         const updatedTask = response.result;
 
         if (updatedTask && updatedTask.id) {
+          const notifText = status === "completed" ? "completed" : "not completed";
+          this.showNotification(`Task ${notifText}`);
+
           this.listTasksOfList(this.state.selectedTaskListId);
         } else {
           console.log("Something went wrong.");
@@ -314,6 +331,14 @@ export default class TasksPage extends Component {
 
   getAbout = () => {
     this.setState({ isAbout: true, selectedTaskListId: null });
+  };
+
+  showNotification = (message, autoHideDuration = 3000) => {
+    if (this.timer) clearTimeout(this.timer);
+
+    this.setState({ notification: { message } }, () => {
+      this.timer = setTimeout(() => this.setState({ notification: null }), autoHideDuration);
+    });
   };
 
   render() {
@@ -392,6 +417,17 @@ export default class TasksPage extends Component {
           onCancel={this.handleCUTaskCancel}
           onSubmit={this.handleCUTask}
         />
+
+        {this.state.notification && (
+          <Snackbar
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left"
+            }}
+            open={true}
+            message={this.state.notification.message}
+          />
+        )}
       </div>
     );
   }
