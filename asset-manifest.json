@@ -1,13 +1,13 @@
 {
-  "main.css": "/Kirill255/react-google-tasks/static/css/main.5ee34161.chunk.css",
-  "main.js": "/Kirill255/react-google-tasks/static/js/main.0c185290.chunk.js",
-  "main.js.map": "/Kirill255/react-google-tasks/static/js/main.0c185290.chunk.js.map",
-  "runtime~main.js": "/Kirill255/react-google-tasks/static/js/runtime~main.d1e40431.js",
-  "runtime~main.js.map": "/Kirill255/react-google-tasks/static/js/runtime~main.d1e40431.js.map",
-  "static/js/2.7e96e397.chunk.js": "/Kirill255/react-google-tasks/static/js/2.7e96e397.chunk.js",
-  "static/js/2.7e96e397.chunk.js.map": "/Kirill255/react-google-tasks/static/js/2.7e96e397.chunk.js.map",
-  "index.html": "/Kirill255/react-google-tasks/index.html",
-  "precache-manifest.0d6fec986aaed9aa20ce7229d05c4b9c.js": "/Kirill255/react-google-tasks/precache-manifest.0d6fec986aaed9aa20ce7229d05c4b9c.js",
-  "service-worker.js": "/Kirill255/react-google-tasks/service-worker.js",
-  "static/css/main.5ee34161.chunk.css.map": "/Kirill255/react-google-tasks/static/css/main.5ee34161.chunk.css.map"
+  "main.css": "/react-google-tasks/static/css/main.5ee34161.chunk.css",
+  "main.js": "/react-google-tasks/static/js/main.3852b389.chunk.js",
+  "main.js.map": "/react-google-tasks/static/js/main.3852b389.chunk.js.map",
+  "runtime~main.js": "/react-google-tasks/static/js/runtime~main.e6cf4111.js",
+  "runtime~main.js.map": "/react-google-tasks/static/js/runtime~main.e6cf4111.js.map",
+  "static/js/2.7e96e397.chunk.js": "/react-google-tasks/static/js/2.7e96e397.chunk.js",
+  "static/js/2.7e96e397.chunk.js.map": "/react-google-tasks/static/js/2.7e96e397.chunk.js.map",
+  "index.html": "/react-google-tasks/index.html",
+  "precache-manifest.d507d6c38da5abe9cb8792b5b90e8748.js": "/react-google-tasks/precache-manifest.d507d6c38da5abe9cb8792b5b90e8748.js",
+  "service-worker.js": "/react-google-tasks/service-worker.js",
+  "static/css/main.5ee34161.chunk.css.map": "/react-google-tasks/static/css/main.5ee34161.chunk.css.map"
 }
