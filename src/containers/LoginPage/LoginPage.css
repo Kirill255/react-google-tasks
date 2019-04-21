@@ -3,7 +3,7 @@
   /* color: rgb(173, 173, 194); */
   width: 100vw;
   height: 100vh;
-  background: url(/image/natural.jpg) center no-repeat;
+  background: url(/react-google-tasks/image/natural.jpg) center no-repeat;
   display: flex;
   flex-direction: column;
   justify-content: center;

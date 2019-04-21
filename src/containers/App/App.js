@@ -39,7 +39,7 @@ class App extends Component {
   }
 
   initClient = () => {
-    console.log("-- in initClient --");
+    // console.log("-- in initClient --");
     this.setState({ loading: true });
 
     window.gapi.load("client:auth2", () => {
