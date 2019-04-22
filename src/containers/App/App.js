@@ -15,14 +15,7 @@ class App extends Component {
   };
 
   componentDidMount() {
-    const self = this;
-    const gapiScript = document.createElement("script");
-    gapiScript.src = "https://apis.google.com/js/api.js?onload=onGapiLoad";
-    window.onGapiLoad = function() {
-      self.checkInitClient();
-    };
-
-    document.body.appendChild(gapiScript);
+    window.gapi.load("client:auth2", this.checkInitClient);
   }
 
   checkInitClient = () => {
@@ -41,11 +34,11 @@ class App extends Component {
   };
 
   handleSignInClick = () => {
-    apiAuth.auth2.signIn().catch(console.log);
+    apiAuth.signIn();
   };
 
   handleSignoutClick = () => {
-    apiAuth.auth2.signOut().catch(console.log);
+    apiAuth.signOut();
   };
 
   render() {

@@ -12,6 +12,8 @@ https://developers.google.com/identity/sign-in/web/
 
 https://gsuite.google.com/learning-center/products/apps/keep-track-of-tasks/#!/
 
+https://github.com/google/google-api-javascript-client
+
 ## Related
 
 https://github.com/anthonyjgrove/react-google-login
@@ -39,3 +41,5 @@ https://material-ui-pickers.dev/
 https://github.com/google/google-api-javascript-client/issues/399
 
 https://stackoverflow.com/questions/40063468/react-component-initialize-state-from-props
+
+https://stackoverflow.com/questions/43713836/how-to-implement-google-api-with-react-redux-and-webpack
