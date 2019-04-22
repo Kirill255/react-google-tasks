@@ -4,85 +4,48 @@ import LoginPage from "../LoginPage/LoginPage";
 import TasksPage from "../TasksPage/TasksPage";
 import Loader from "../../components/Loader/Loader";
 
+import apiAuth from "../../api/auth";
+
 import "./App.css";
-
-const googleUserHandler = (googleUser) => {
-  const profile = googleUser.getBasicProfile();
-  const user = getUserProfile(profile);
-  const id_token = googleUser.getAuthResponse().id_token;
-  user.id_token = id_token;
-
-  return user;
-};
-
-const getUserProfile = (profile) => {
-  return {
-    id: profile.getId(),
-    name: profile.getGivenName(),
-    family_name: profile.getFamilyName(),
-    full_name: profile.getName(),
-    avatar: profile.getImageUrl(),
-    email: profile.getEmail()
-  };
-};
 
 class App extends Component {
   state = {
-    loading: false,
-    isAuthenticated: false,
-    user: null
+    loading: true,
+    isAuthenticated: false
   };
 
   componentDidMount() {
-    window.addEventListener("google-loaded", this.initClient);
-    window.gapi && this.initClient();
+    const self = this;
+    const gapiScript = document.createElement("script");
+    gapiScript.src = "https://apis.google.com/js/api.js?onload=onGapiLoad";
+    window.onGapiLoad = function() {
+      self.checkInitClient();
+    };
+
+    document.body.appendChild(gapiScript);
   }
 
-  initClient = () => {
-    // console.log("-- in initClient --");
-    this.setState({ loading: true });
-
-    window.gapi.load("client:auth2", () => {
-      window.gapi.client
-        .init({
-          apiKey: "AIzaSyDKvF1KEk7XllLfpfhbgv1MmcxaSVgWyeA",
-          discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/tasks/v1/rest"],
-          clientId: "365243747034-8bogar38jdern567eimmvs48qqpc7ebi.apps.googleusercontent.com",
-          scope: "https://www.googleapis.com/auth/tasks"
-        })
-        .then(() => {
-          // Assign auth2 variable
-          this.auth2 = window.gapi.auth2.getAuthInstance();
-          this.setState({ loading: false });
-          // Listen for sign-in state changes.
-          this.auth2.isSignedIn.listen(this.updateSigninStatus);
-
-          // Handle the initial sign-in state.
-          this.updateSigninStatus(this.auth2.isSignedIn.get());
-        })
-        .catch(console.log);
+  checkInitClient = () => {
+    apiAuth.initClient().then(() => {
+      apiAuth.auth2.isSignedIn.listen(this.updateSigninStatus);
+      this.updateSigninStatus(apiAuth.isSignedIn());
     });
   };
 
   updateSigninStatus = (isSignedIn) => {
     if (isSignedIn) {
-      this.getUser();
+      this.setState({ loading: false, isAuthenticated: true });
     } else {
-      this.setState({ user: null, isAuthenticated: false });
+      this.setState({ loading: false, isAuthenticated: false });
     }
   };
 
-  getUser = () => {
-    const user = googleUserHandler(this.auth2.currentUser.get());
-    this.setState({ user, isAuthenticated: true });
-  };
-
   handleSignInClick = () => {
-    this.auth2.signIn().catch(console.log);
+    apiAuth.auth2.signIn().catch(console.log);
   };
 
   handleSignoutClick = () => {
-    this.auth2.signOut().catch(console.log);
+    apiAuth.auth2.signOut().catch(console.log);
   };
 
   render() {
