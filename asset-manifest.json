@@ -1,13 +1,13 @@
 {
   "main.css": "/react-google-tasks/static/css/main.8118e458.chunk.css",
-  "main.js": "/react-google-tasks/static/js/main.3852b389.chunk.js",
-  "main.js.map": "/react-google-tasks/static/js/main.3852b389.chunk.js.map",
+  "main.js": "/react-google-tasks/static/js/main.a2a40473.chunk.js",
+  "main.js.map": "/react-google-tasks/static/js/main.a2a40473.chunk.js.map",
   "runtime~main.js": "/react-google-tasks/static/js/runtime~main.e6cf4111.js",
   "runtime~main.js.map": "/react-google-tasks/static/js/runtime~main.e6cf4111.js.map",
-  "static/js/2.7e96e397.chunk.js": "/react-google-tasks/static/js/2.7e96e397.chunk.js",
-  "static/js/2.7e96e397.chunk.js.map": "/react-google-tasks/static/js/2.7e96e397.chunk.js.map",
+  "static/js/2.b9f950d8.chunk.js": "/react-google-tasks/static/js/2.b9f950d8.chunk.js",
+  "static/js/2.b9f950d8.chunk.js.map": "/react-google-tasks/static/js/2.b9f950d8.chunk.js.map",
   "index.html": "/react-google-tasks/index.html",
-  "precache-manifest.c817ac803ec33f5f45a701ced2f5dca5.js": "/react-google-tasks/precache-manifest.c817ac803ec33f5f45a701ced2f5dca5.js",
+  "precache-manifest.fa5d700c67e61ef899149c7d182c695b.js": "/react-google-tasks/precache-manifest.fa5d700c67e61ef899149c7d182c695b.js",
   "service-worker.js": "/react-google-tasks/service-worker.js",
   "static/css/main.8118e458.chunk.css.map": "/react-google-tasks/static/css/main.8118e458.chunk.css.map"
 }
