@@ -181,7 +181,11 @@ export default class TasksPage extends Component {
     try {
       const updatedTaskList = await apiTasks.updateTaskList(taskListId, title);
 
-      this.setState({ taskListTitle: "", updatedTaskListId: null });
+      this.setState({
+        taskListTitle: "",
+        updatedTaskListId: null,
+        selectedTaskListTitle: updatedTaskList.title
+      });
 
       if (updatedTaskList && updatedTaskList.id) {
         this.showNotification("List updated successfuly");
@@ -198,6 +202,9 @@ export default class TasksPage extends Component {
       const result = await apiTasks.deleteTaskList(taskListId); // If successful, this method returns an empty response body.
 
       if (!result) {
+        if (taskListId === this.state.selectedTaskListId) {
+          this.setState({ selectedTaskListTitle: "", selectedTaskListId: null });
+        }
         this.showNotification("List removed successfuly");
 
         this.listTaskLists();
