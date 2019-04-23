@@ -16,6 +16,8 @@ import TaskListModal from "../../components/TaskListModal/TaskListModal";
 import TaskModal from "../../components/TaskModal/TaskModal";
 import About from "../../components/About/About";
 
+import apiTasks from "../../api/tasks";
+
 import "./TasksPage.css";
 
 export default class TasksPage extends Component {
@@ -61,92 +63,68 @@ export default class TasksPage extends Component {
    ** All
    */
 
-  listTaskLists = () => {
-    window.gapi.client.tasks.tasklists
-      .list({
-        maxResults: 10
-      })
-      .then((response) => {
-        const taskLists = response.result.items;
+  listTaskLists = async () => {
+    const taskLists = await apiTasks.listTaskLists();
 
-        if (taskLists && taskLists.length > 0) {
-          this.setState({ taskLists });
-        } else {
-          console.log("No task lists found.");
-        }
-      })
-      .catch(console.log);
+    if (taskLists && taskLists.length > 0) {
+      this.setState({ taskLists });
+    } else {
+      console.log("No task lists found.");
+    }
   };
 
-  taskListById = (id) => {
-    window.gapi.client.tasks.tasklists
-      .get({
-        tasklist: id
-      })
-      .then((response) => {
-        const taskList = response.result;
-        if (taskList && taskList.id) {
-          this.setState({
-            isModalOpen: true, // open modal after receiving the response
-            updatedTaskListId: taskList.id,
-            taskListTitle: taskList.title
-          });
-        } else {
-          console.log("No task lists found.");
-        }
-      })
-      .catch(console.log);
+  taskListById = async (taskListId) => {
+    const taskList = await apiTasks.taskListById(taskListId);
+
+    if (taskList && taskList.id) {
+      this.setState({
+        isModalOpen: true, // open modal after receiving the response
+        updatedTaskListId: taskList.id,
+        taskListTitle: taskList.title
+      });
+    } else {
+      console.log("No task lists found.");
+    }
   };
 
-  taskById = (id) => {
-    window.gapi.client.tasks.tasks
-      .get({
-        tasklist: this.state.selectedTaskListId,
-        task: id
-      })
-      .then((response) => {
-        const task = response.result;
-        if (task && task.id) {
-          this.setState({
-            isModalTaskOpen: true, // open modal after receiving the response
-            updatedTaskId: task.id,
-            taskTitle: task.title,
-            taskNotes: task.notes || "",
-            taskDue: task.due || null
-          });
-        } else {
-          console.log("No task lists found.");
-        }
-      })
-      .catch(console.log);
+  taskById = async (taskId) => {
+    const task = await apiTasks.taskById(this.state.selectedTaskListId, taskId);
+
+    if (task && task.id) {
+      this.setState({
+        isModalTaskOpen: true, // open modal after receiving the response
+        updatedTaskId: task.id,
+        taskTitle: task.title,
+        taskNotes: task.notes || "",
+        taskDue: task.due || null
+      });
+    } else {
+      console.log("No task lists found.");
+    }
   };
 
   // ???????????????
-  listTasksOfList = (id, title = this.state.selectedTaskListTitle) => {
-    window.gapi.client.tasks.tasks
-      .list({ tasklist: id, showHidden: true })
-      .then((response) => {
-        const tasks = response.result.items;
+  listTasksOfList = async (taskListId, title) => {
+    const tasks = await apiTasks.listTasksOfList(taskListId);
 
-        if (tasks && tasks.length > 0) {
-          this.setState({
-            tasks,
-            selectedTaskListId: id,
-            selectedTaskListTitle: title,
-            isRequest: false,
-            isAbout: false
-          });
-        } else {
-          this.setState({
-            tasks: [],
-            selectedTaskListId: id,
-            selectedTaskListTitle: title,
-            isRequest: false
-          });
-          console.log("No tasks of this list found.");
-        }
-      })
-      .catch(console.log);
+    if (tasks && tasks.length > 0) {
+      this.setState({
+        tasks,
+        selectedTaskListId: taskListId,
+        selectedTaskListTitle: title,
+        isRequest: false,
+        isAbout: false
+      });
+    } else {
+      this.setState({
+        tasks: [],
+        selectedTaskListId: taskListId,
+        selectedTaskListTitle: title,
+        isRequest: false,
+        isAbout: false
+      });
+      console.log("No tasks of this list found.");
+    }
   };
 
   /*
@@ -170,21 +148,16 @@ export default class TasksPage extends Component {
     this.setState({ taskListTitle: "", updatedTaskListId: null });
   };
 
-  createNewTaskList = (title) => {
-    window.gapi.client.tasks.tasklists
-      .insert({ title })
-      .then((response) => {
-        const newTask = response.result;
+  createNewTaskList = async (title) => {
+    const newTaskList = await apiTasks.createNewTaskList(title);
 
-        if (newTask && newTask.id) {
-          this.showNotification("List created successfuly");
+    if (newTaskList && newTaskList.id) {
+      this.showNotification("List created successfuly");
 
-          this.listTaskLists();
-        } else {
-          console.log("Something went wrong.");
-        }
-      })
-      .catch(console.log);
+      this.listTaskLists();
+    } else {
+      console.log("Something went wrong.");
+    }
   };
 
   // U - update
@@ -193,39 +166,30 @@ export default class TasksPage extends Component {
     this.taskListById(id);
   };
 
-  updateTaskList = (id, title) => {
-    window.gapi.client.tasks.tasklists
-      .update({ tasklist: id, id, title })
-      .then((response) => {
-        this.setState({ taskListTitle: "", updatedTaskListId: null });
-        const updatedTaskList = response.result;
+  updateTaskList = async (taskListId, title) => {
+    const updatedTaskList = await apiTasks.updateTaskList(taskListId, title);
 
-        if (updatedTaskList && updatedTaskList.id) {
-          this.showNotification("List updated successfuly");
+    this.setState({ taskListTitle: "", updatedTaskListId: null });
 
-          this.listTaskLists();
-        } else {
-          console.log("Something went wrong.");
-        }
-      })
-      .catch(console.log);
+    if (updatedTaskList && updatedTaskList.id) {
+      this.showNotification("List updated successfuly");
+
+      this.listTaskLists();
+    } else {
+      console.log("Something went wrong.");
+    }
   };
 
-  deleteTaskList = (id) => {
-    window.gapi.client.tasks.tasklists
-      .delete({ tasklist: id })
-      .then((response) => {
-        const result = response.result; // If successful, this method returns an empty response body.
+  deleteTaskList = async (taskListId) => {
+    const result = await apiTasks.deleteTaskList(taskListId); // If successful, this method returns an empty response body.
 
-        if (!result) {
-          this.showNotification("List removed successfuly");
+    if (!result) {
+      this.showNotification("List removed successfuly");
 
-          this.listTaskLists();
-        } else {
-          console.log("Something went wrong.");
-        }
-      })
-      .catch(console.log);
+      this.listTaskLists();
+    } else {
+      console.log("Something went wrong.");
+    }
   };
 
   /*
@@ -248,85 +212,66 @@ export default class TasksPage extends Component {
     this.setState({ taskTitle: "", taskNotes: "", taskDue: null, updatedTaskId: null });
   };
 
-  createNewTask = (task) => {
-    window.gapi.client.tasks.tasks
-      .insert({ tasklist: this.state.selectedTaskListId, ...task })
-      .then((response) => {
-        const newTask = response.result;
+  createNewTask = async (task) => {
+    const newTask = await apiTasks.createNewTask(this.state.selectedTaskListId, task);
 
-        if (newTask && newTask.id) {
-          this.showNotification("Task created successfuly");
+    if (newTask && newTask.id) {
+      this.showNotification("Task created successfuly");
 
-          const newTasks = [newTask, ...this.state.tasks];
-          this.setState({ tasks: newTasks });
-        } else {
-          console.log("Something went wrong.");
-        }
-      })
-      .catch(console.log);
+      const newTasks = [newTask, ...this.state.tasks];
+      this.setState({ tasks: newTasks });
+    } else {
+      console.log("Something went wrong.");
+    }
   };
 
   handleUTask = (id) => {
     this.taskById(id);
   };
 
-  updateTask = (id, task) => {
+  updateTask = async (taskId, task) => {
     this.setState({ taskTitle: "", taskNotes: "", taskDue: null, updatedTaskId: null }); // обнуляю перед запросом, иначе у меня приходят старые пропсы в TaskModal
 
-    window.gapi.client.tasks.tasks
-      .update({ tasklist: this.state.selectedTaskListId, task: id, id, ...task })
-      .then((response) => {
-        // this.setState({ taskTitle: "", taskNotes: "", taskDue: null, updatedTaskId: null });
-        const updatedTask = response.result;
+    const updatedTask = await apiTasks.updateTask(this.state.selectedTaskListId, taskId, task);
+    // this.setState({ taskTitle: "", taskNotes: "", taskDue: null, updatedTaskId: null });
 
-        if (updatedTask && updatedTask.id) {
-          this.showNotification("Task updated successfuly");
+    if (updatedTask && updatedTask.id) {
+      this.showNotification("Task updated successfuly");
 
-          this.listTasksOfList(this.state.selectedTaskListId);
-        } else {
-          console.log("Something went wrong.");
-        }
-      })
-      .catch(console.log);
+      this.listTasksOfList(this.state.selectedTaskListId, this.state.selectedTaskListTitle);
+    } else {
+      console.log("Something went wrong.");
+    }
   };
 
-  deleteTask = (id) => {
-    window.gapi.client.tasks.tasks
-      .delete({ tasklist: this.state.selectedTaskListId, task: id })
-      .then((response) => {
-        const result = response.result; // If successful, this method returns an empty response body.
+  deleteTask = async (taskId) => {
+    const result = await apiTasks.deleteTask(this.state.selectedTaskListId, taskId); // If successful, this method returns an empty response body.
 
-        if (!result) {
-          this.showNotification("Task removed successfuly");
+    if (!result) {
+      this.showNotification("Task removed successfuly");
 
-          const newTasks = this.state.tasks.filter((task) => task.id !== id);
-          this.setState({ tasks: newTasks });
-        } else {
-          console.log("Something went wrong.");
-        }
-      })
-      .catch(console.log);
+      const newTasks = this.state.tasks.filter((task) => task.id !== taskId);
+      this.setState({ tasks: newTasks });
+    } else {
+      console.log("Something went wrong.");
+    }
   };
 
-  handleTaskComplete = (id, status) => {
+  handleTaskComplete = async (taskId, status) => {
     this.setState({ isRequest: true });
 
-    window.gapi.client.tasks.tasks
-      .update({ tasklist: this.state.selectedTaskListId, task: id, id, status })
-      .then((response) => {
-        // this.setState({ isRequest: false }); // перенёс в listTasksOfList
-        const updatedTask = response.result;
+    const updatedTask = await apiTasks.completeTask(this.state.selectedTaskListId, taskId, status);
 
-        if (updatedTask && updatedTask.id) {
-          const notifText = status === "completed" ? "completed" : "not completed";
-          this.showNotification(`Task ${notifText}`);
+    // this.setState({ isRequest: false }); // перенёс в listTasksOfList
 
-          this.listTasksOfList(this.state.selectedTaskListId);
-        } else {
-          console.log("Something went wrong.");
-        }
-      })
-      .catch(console.log);
+    if (updatedTask && updatedTask.id) {
+      const notifText = status === "completed" ? "completed" : "not completed";
+      this.showNotification(`Task ${notifText}`);
+
+      this.listTasksOfList(this.state.selectedTaskListId, this.state.selectedTaskListTitle);
+    } else {
+      console.log("Something went wrong.");
+    }
   };
 
   getAbout = () => {
