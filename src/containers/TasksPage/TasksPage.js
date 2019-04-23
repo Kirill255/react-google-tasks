@@ -64,66 +64,75 @@ export default class TasksPage extends Component {
    */
 
   listTaskLists = async () => {
-    const taskLists = await apiTasks.listTaskLists();
+    try {
+      const taskLists = await apiTasks.listTaskLists();
 
-    if (taskLists && taskLists.length > 0) {
-      this.setState({ taskLists });
-    } else {
-      console.log("No task lists found.");
+      if (taskLists && taskLists.length > 0) {
+        this.setState({ taskLists });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   taskListById = async (taskListId) => {
-    const taskList = await apiTasks.taskListById(taskListId);
+    try {
+      const taskList = await apiTasks.taskListById(taskListId);
 
-    if (taskList && taskList.id) {
-      this.setState({
-        isModalOpen: true, // open modal after receiving the response
-        updatedTaskListId: taskList.id,
-        taskListTitle: taskList.title
-      });
-    } else {
-      console.log("No task lists found.");
+      if (taskList && taskList.id) {
+        this.setState({
+          isModalOpen: true, // open modal after receiving the response
+          updatedTaskListId: taskList.id,
+          taskListTitle: taskList.title
+        });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   taskById = async (taskId) => {
-    const task = await apiTasks.taskById(this.state.selectedTaskListId, taskId);
+    try {
+      const task = await apiTasks.taskById(this.state.selectedTaskListId, taskId);
 
-    if (task && task.id) {
-      this.setState({
-        isModalTaskOpen: true, // open modal after receiving the response
-        updatedTaskId: task.id,
-        taskTitle: task.title,
-        taskNotes: task.notes || "",
-        taskDue: task.due || null
-      });
-    } else {
-      console.log("No task lists found.");
+      if (task && task.id) {
+        this.setState({
+          isModalTaskOpen: true, // open modal after receiving the response
+          updatedTaskId: task.id,
+          taskTitle: task.title,
+          taskNotes: task.notes || "",
+          taskDue: task.due || null
+        });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   // ???????????????
   listTasksOfList = async (taskListId, title) => {
-    const tasks = await apiTasks.listTasksOfList(taskListId);
+    try {
+      const tasks = await apiTasks.listTasksOfList(taskListId);
 
-    if (tasks && tasks.length > 0) {
-      this.setState({
-        tasks,
-        selectedTaskListId: taskListId,
-        selectedTaskListTitle: title,
-        isRequest: false,
-        isAbout: false
-      });
-    } else {
-      this.setState({
-        tasks: [],
-        selectedTaskListId: taskListId,
-        selectedTaskListTitle: title,
-        isRequest: false,
-        isAbout: false
-      });
-      console.log("No tasks of this list found.");
+      if (tasks && tasks.length > 0) {
+        this.setState({
+          tasks,
+          selectedTaskListId: taskListId,
+          selectedTaskListTitle: title,
+          isRequest: false,
+          isAbout: false
+        });
+      } else {
+        this.setState({
+          tasks: [],
+          selectedTaskListId: taskListId,
+          selectedTaskListTitle: title,
+          isRequest: false,
+          isAbout: false
+        });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -149,14 +158,16 @@ export default class TasksPage extends Component {
   };
 
   createNewTaskList = async (title) => {
-    const newTaskList = await apiTasks.createNewTaskList(title);
+    try {
+      const newTaskList = await apiTasks.createNewTaskList(title);
 
-    if (newTaskList && newTaskList.id) {
-      this.showNotification("List created successfuly");
+      if (newTaskList && newTaskList.id) {
+        this.showNotification("List created successfuly");
 
-      this.listTaskLists();
-    } else {
-      console.log("Something went wrong.");
+        this.listTaskLists();
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -167,28 +178,32 @@ export default class TasksPage extends Component {
   };
 
   updateTaskList = async (taskListId, title) => {
-    const updatedTaskList = await apiTasks.updateTaskList(taskListId, title);
+    try {
+      const updatedTaskList = await apiTasks.updateTaskList(taskListId, title);
 
-    this.setState({ taskListTitle: "", updatedTaskListId: null });
+      this.setState({ taskListTitle: "", updatedTaskListId: null });
 
-    if (updatedTaskList && updatedTaskList.id) {
-      this.showNotification("List updated successfuly");
+      if (updatedTaskList && updatedTaskList.id) {
+        this.showNotification("List updated successfuly");
 
-      this.listTaskLists();
-    } else {
-      console.log("Something went wrong.");
+        this.listTaskLists();
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   deleteTaskList = async (taskListId) => {
-    const result = await apiTasks.deleteTaskList(taskListId); // If successful, this method returns an empty response body.
+    try {
+      const result = await apiTasks.deleteTaskList(taskListId); // If successful, this method returns an empty response body.
 
-    if (!result) {
-      this.showNotification("List removed successfuly");
+      if (!result) {
+        this.showNotification("List removed successfuly");
 
-      this.listTaskLists();
-    } else {
-      console.log("Something went wrong.");
+        this.listTaskLists();
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -213,15 +228,17 @@ export default class TasksPage extends Component {
   };
 
   createNewTask = async (task) => {
-    const newTask = await apiTasks.createNewTask(this.state.selectedTaskListId, task);
+    try {
+      const newTask = await apiTasks.createNewTask(this.state.selectedTaskListId, task);
 
-    if (newTask && newTask.id) {
-      this.showNotification("Task created successfuly");
+      if (newTask && newTask.id) {
+        this.showNotification("Task created successfuly");
 
-      const newTasks = [newTask, ...this.state.tasks];
-      this.setState({ tasks: newTasks });
-    } else {
-      console.log("Something went wrong.");
+        const newTasks = [newTask, ...this.state.tasks];
+        this.setState({ tasks: newTasks });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -232,45 +249,55 @@ export default class TasksPage extends Component {
   updateTask = async (taskId, task) => {
     this.setState({ taskTitle: "", taskNotes: "", taskDue: null, updatedTaskId: null }); // обнуляю перед запросом, иначе у меня приходят старые пропсы в TaskModal
 
-    const updatedTask = await apiTasks.updateTask(this.state.selectedTaskListId, taskId, task);
-    // this.setState({ taskTitle: "", taskNotes: "", taskDue: null, updatedTaskId: null });
+    try {
+      const updatedTask = await apiTasks.updateTask(this.state.selectedTaskListId, taskId, task);
+      // this.setState({ taskTitle: "", taskNotes: "", taskDue: null, updatedTaskId: null });
 
-    if (updatedTask && updatedTask.id) {
-      this.showNotification("Task updated successfuly");
+      if (updatedTask && updatedTask.id) {
+        this.showNotification("Task updated successfuly");
 
-      this.listTasksOfList(this.state.selectedTaskListId, this.state.selectedTaskListTitle);
-    } else {
-      console.log("Something went wrong.");
+        this.listTasksOfList(this.state.selectedTaskListId, this.state.selectedTaskListTitle);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   deleteTask = async (taskId) => {
-    const result = await apiTasks.deleteTask(this.state.selectedTaskListId, taskId); // If successful, this method returns an empty response body.
+    try {
+      const result = await apiTasks.deleteTask(this.state.selectedTaskListId, taskId); // If successful, this method returns an empty response body.
 
-    if (!result) {
-      this.showNotification("Task removed successfuly");
+      if (!result) {
+        this.showNotification("Task removed successfuly");
 
-      const newTasks = this.state.tasks.filter((task) => task.id !== taskId);
-      this.setState({ tasks: newTasks });
-    } else {
-      console.log("Something went wrong.");
+        const newTasks = this.state.tasks.filter((task) => task.id !== taskId);
+        this.setState({ tasks: newTasks });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   handleTaskComplete = async (taskId, status) => {
     this.setState({ isRequest: true });
 
-    const updatedTask = await apiTasks.completeTask(this.state.selectedTaskListId, taskId, status);
+    try {
+      const updatedTask = await apiTasks.completeTask(
+        this.state.selectedTaskListId,
+        taskId,
+        status
+      );
 
-    // this.setState({ isRequest: false }); // перенёс в listTasksOfList
+      // this.setState({ isRequest: false }); // перенёс в listTasksOfList
 
-    if (updatedTask && updatedTask.id) {
-      const notifText = status === "completed" ? "completed" : "not completed";
-      this.showNotification(`Task ${notifText}`);
+      if (updatedTask && updatedTask.id) {
+        const notifText = status === "completed" ? "completed" : "not completed";
+        this.showNotification(`Task ${notifText}`);
 
-      this.listTasksOfList(this.state.selectedTaskListId, this.state.selectedTaskListTitle);
-    } else {
-      console.log("Something went wrong.");
+        this.listTasksOfList(this.state.selectedTaskListId, this.state.selectedTaskListTitle);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
