@@ -14,6 +14,8 @@ https://gsuite.google.com/learning-center/products/apps/keep-track-of-tasks/#!/
 
 https://github.com/google/google-api-javascript-client
 
+https://medium.com/@bretcameron/how-to-use-the-google-drive-api-with-javascript-57a6cc9e5262
+
 ## Related
 
 https://github.com/anthonyjgrove/react-google-login
